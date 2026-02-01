@@ -1,0 +1,17 @@
+{
+  "sources": {
+    "moltx": {
+      "counts": {
+        "bolt11_mentions": 0,
+        "lightning_mentions": 0,
+        "lnurl_mentions": 0,
+        "pages_scanned": 2,
+        "phoenixd_mentions": 0,
+        "tipjar_wellknown_mentions": 0
+      },
+      "highlights": [],
+      "mode": "scrape"
+    }
+  },
+  "updated_at": "2026-02-01T14:34:47.644544Z"
+}
