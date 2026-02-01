@@ -17,9 +17,14 @@ async function main() {
   const src = data.sources && data.sources.moltx;
   const counts = (src && src.counts) || {};
   const mode = (src && src.mode) || 'unknown';
+  const meta = (src && src.meta) || {};
+
+  const metaBits = [];
+  if (meta.endpoints_queried != null) metaBits.push(`endpoints: <code>${meta.endpoints_queried}</code>`);
+  if (meta.unique_posts != null) metaBits.push(`unique posts: <code>${meta.unique_posts}</code>`);
 
   statusEl.innerHTML = `<div><b>Updated:</b> <code>${updated}</code></div>`
-    + `<div class="muted">Source: MoltX (${mode})</div>`;
+    + `<div class="muted">Source: MoltX (${mode})${metaBits.length ? ' · ' + metaBits.join(' · ') : ''}</div>`;
 
   const scanned = (counts.posts_scanned ?? counts.pages_scanned ?? 0);
   const scannedLabel = (counts.posts_scanned != null) ? 'Posts scanned' : 'Pages scanned';
