@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Update data/adoption.json from the MoltX API (global feed).
+"""Update lightning/data/adoption.json from the MoltX API (global feed).
 
 Requires env:
 - MOLTX_API_KEY (Bearer token)
 Optional:
 - LIMIT (default 120)
 
-Writes: data/adoption.json
+Writes: lightning/data/adoption.json
 """
 
 import json
@@ -172,8 +172,8 @@ def main():
         },
     }
 
-    os.makedirs("data", exist_ok=True)
-    with open("data/adoption.json", "w", encoding="utf-8") as f:
+    os.makedirs("lightning/data", exist_ok=True)
+    with open("lightning/data/adoption.json", "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2, sort_keys=True)
 
 

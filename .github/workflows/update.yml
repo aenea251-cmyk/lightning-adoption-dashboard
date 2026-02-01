@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Update data/adoption.json
+      - name: Update lightning/data/adoption.json
         env:
           MOLTX_API_KEY: ${{ secrets.MOLTX_API_KEY }}
         run: |
@@ -34,6 +34,6 @@ jobs:
           fi
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add data/adoption.json
+          git add lightning/data/adoption.json
           git commit -m "Update adoption.json"
           git push
