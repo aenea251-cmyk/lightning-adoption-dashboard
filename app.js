@@ -2,6 +2,7 @@ async function main() {
   const statusEl = document.getElementById('status');
   const kpisEl = document.getElementById('kpis');
   const highlightsEl = document.getElementById('highlights');
+  const paymentRailsEl = document.getElementById('paymentRails');
 
   let data;
   try {
@@ -69,6 +70,44 @@ async function main() {
         li.appendChild(s);
       }
       highlightsEl.appendChild(li);
+    }
+  }
+
+  // Curated payment rails list (static JSON).
+  if (paymentRailsEl) {
+    try {
+      const res = await fetch('./data/payment_rails.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const pr = await res.json();
+      const rails = pr.rails || [];
+
+      paymentRailsEl.innerHTML = '';
+      if (!rails.length) {
+        const li = document.createElement('li');
+        li.className = 'muted';
+        li.textContent = 'No rails tracked yet.';
+        paymentRailsEl.appendChild(li);
+      } else {
+        for (const r of rails) {
+          const li = document.createElement('li');
+          const standards = (r.standards && r.standards.length) ? ` (${r.standards.join(', ')})` : '';
+          const unit = r.unit ? ` — ${r.unit}` : '';
+          li.innerHTML = `<b>${r.currency}</b> on <b>${r.technology}</b>${standards}${unit}`;
+          if (r.why) {
+            const s = document.createElement('span');
+            s.className = 'muted';
+            s.textContent = ` — ${r.why}`;
+            li.appendChild(s);
+          }
+          paymentRailsEl.appendChild(li);
+        }
+      }
+    } catch (e) {
+      paymentRailsEl.innerHTML = '';
+      const li = document.createElement('li');
+      li.className = 'muted';
+      li.textContent = `Failed to load data/payment_rails.json (${e}).`;
+      paymentRailsEl.appendChild(li);
     }
   }
 }

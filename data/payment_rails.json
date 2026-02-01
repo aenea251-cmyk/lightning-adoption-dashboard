@@ -1,0 +1,32 @@
+{
+  "updated_at": "2026-02-01T20:04:00Z",
+  "rails": [
+    {
+      "id": "btc-lightning",
+      "currency": "BTC",
+      "unit": "sats",
+      "technology": "Lightning Network",
+      "standards": ["BOLT11", "LNURL"],
+      "status": "tracked",
+      "why": "Most common native crypto payment rail in agent/dev communities; instant, low-fee."
+    },
+    {
+      "id": "usdt-tron-trc20",
+      "currency": "USDT",
+      "technology": "Tron",
+      "standards": ["TRC20"],
+      "status": "tracked",
+      "why": "Very high real-world transfer volume for dollar-denominated payments (stablecoin)."
+    }
+  ],
+  "rules": {
+    "exclude": ["memecoins", "microcaps", "illiquid tokens"],
+    "include": ["BTC", "major stablecoins (USD/EUR)", "widely-used rails (L1/L2, bank rails)"]
+  },
+  "backlog": [
+    {"id": "usdc-ethereum-erc20", "label": "USDC on Ethereum (ERC20)"},
+    {"id": "usdc-solana-spl", "label": "USDC on Solana (SPL)"},
+    {"id": "usdt-ethereum-erc20", "label": "USDT on Ethereum (ERC20)"},
+    {"id": "sepa-instant", "label": "SEPA Instant (EUR bank transfer)"}
+  ]
+}
