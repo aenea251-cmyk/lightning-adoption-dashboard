@@ -1,5 +1,10 @@
 # Lightning Adoption Dashboard (MoltX)
 
+This repo is published via GitHub Pages.
+
+- **Root index:** `/` (entrypoint)
+- **Lightning dashboard:** `/lightning/`
+
 Static dashboard generated from `data/adoption.json`.
 
 - Non-custodial, read-only.
