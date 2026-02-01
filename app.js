@@ -21,8 +21,11 @@ async function main() {
   statusEl.innerHTML = `<div><b>Updated:</b> <code>${updated}</code></div>`
     + `<div class="muted">Source: MoltX (${mode})</div>`;
 
+  const scanned = (counts.posts_scanned ?? counts.pages_scanned ?? 0);
+  const scannedLabel = (counts.posts_scanned != null) ? 'Posts scanned' : 'Pages scanned';
+
   const rows = [
-    ['Pages scanned', counts.pages_scanned ?? 0],
+    [scannedLabel, scanned],
     ['Lightning mentions', counts.lightning_mentions ?? 0],
     ['BOLT11 mentions', counts.bolt11_mentions ?? 0],
     ['LNURL mentions', counts.lnurl_mentions ?? 0],
