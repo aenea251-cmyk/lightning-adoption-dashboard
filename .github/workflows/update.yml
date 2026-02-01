@@ -26,13 +26,19 @@ jobs:
         run: |
           python update_adoption.py
 
-      - name: Smoke test (local)
+      - name: Smoke test + regression checks (local)
         run: |
           set -euo pipefail
           test -f lightning/data/adoption.json
           test -f lightning/data/payment_rails.json
+
+          # JSON parses
           node -e "JSON.parse(require('fs').readFileSync('lightning/data/adoption.json','utf8')); console.log('adoption.json ok')"
           node -e "JSON.parse(require('fs').readFileSync('lightning/data/payment_rails.json','utf8')); console.log('payment_rails.json ok')"
+
+          # Required fields exist + collectors fail gracefully
+          python -m unittest discover -s tests -q
+
           # Verify the site can fetch the files at the expected paths (catches 404 regressions)
           python -m http.server 8000 &
           PID=$!
