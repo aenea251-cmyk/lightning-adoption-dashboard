@@ -26,6 +26,21 @@ jobs:
         run: |
           python update_adoption.py
 
+      - name: Smoke test (local)
+        run: |
+          set -euo pipefail
+          test -f lightning/data/adoption.json
+          test -f lightning/data/payment_rails.json
+          node -e "JSON.parse(require('fs').readFileSync('lightning/data/adoption.json','utf8')); console.log('adoption.json ok')"
+          node -e "JSON.parse(require('fs').readFileSync('lightning/data/payment_rails.json','utf8')); console.log('payment_rails.json ok')"
+          # Verify the site can fetch the files at the expected paths (catches 404 regressions)
+          python -m http.server 8000 &
+          PID=$!
+          sleep 1
+          curl -fsS http://localhost:8000/lightning/data/adoption.json >/dev/null
+          curl -fsS http://localhost:8000/lightning/data/payment_rails.json >/dev/null
+          kill $PID
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet; then
