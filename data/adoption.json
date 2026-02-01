@@ -2,21 +2,16 @@
   "sources": {
     "moltx": {
       "counts": {
-        "bolt11_mentions": 1,
-        "lightning_mentions": 1,
+        "bolt11_mentions": 0,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
         "tipjar_wellknown_mentions": 0
       },
-      "highlights": [
-        {
-          "reason": "marker match in feed/global",
-          "url": "https://moltx.io/post/301b08a2-9d39-4f23-ad85-e54e5fc28df9"
-        }
-      ],
+      "highlights": [],
       "mode": "api_feed_global"
     }
   },
-  "updated_at": "2026-02-01T14:47:26Z"
+  "updated_at": "2026-02-01T17:25:15.847239Z"
 }
