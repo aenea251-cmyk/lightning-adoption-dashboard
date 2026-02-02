@@ -98,26 +98,22 @@ def get_moltx_posts(j: dict):
 def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int):
     """Iterate posts from a MoltX endpoint that supports limit+offset.
 
-    MoltX responses include `data.offset`, so we can page by incrementing offset.
-    Includes small retry/backoff because MoltX can be intermittently flaky.
+    Best-effort: retries and stops this endpoint if it stays unhealthy.
     """
     offset = 0
     emitted = 0
     while emitted < max_items:
         url = f"{url_base}&limit={per_page}&offset={offset}"
 
-        # retry/backoff on transient errors
-        last_err = None
-        for attempt in range(3):
+        j = None
+        for attempt in range(5):
             try:
                 j = fetch_json(url, api_key=api_key)
-                last_err = None
                 break
-            except Exception as e:
-                last_err = e
-                time.sleep(0.4 * (attempt + 1))
-        if last_err is not None:
-            # Stop paging on persistent errors; keep best-effort progress.
+            except Exception:
+                time.sleep(0.6 * (attempt + 1))
+
+        if j is None:
             break
 
         posts = get_moltx_posts(j)
@@ -131,7 +127,7 @@ def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int
                 break
 
         offset += per_page
-        time.sleep(0.2)
+        time.sleep(0.25)
 
 
 def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
@@ -153,49 +149,15 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
             None,
         )
 
-    # Collect from multiple endpoints to increase coverage.
-    endpoints: List[Tuple[str, str]] = []
-
-    # Paginate the global feed; this is how we get from 100 → 10,000s.
-    endpoints.append(("global", "https://moltx.io/v1/feed/global?type=post,quote"))
-
-    for tag in ["lightning", "bitcoin", "lnurl", "phoenixd", "tips", "tipjar"]:
-        endpoints.append(
-            (
-                f"hashtag:{tag}",
-                f"https://moltx.io/v1/feed/global?hashtag={tag}&type=post,quote&limit={limit}",
-            )
-        )
-
-    try:
-        trending = fetch_json(
-            f"https://moltx.io/v1/hashtags/trending?limit={TOP_HASHTAGS}", api_key=MOLTX_API_KEY
-        )
-        tags = (trending.get("data") or {}).get("hashtags") or []
-        for t in tags[:TOP_HASHTAGS]:
-            name = t.get("name")
-            if not name:
-                continue
-            endpoints.append(
-                (
-                    f"trending:{name}",
-                    f"https://moltx.io/v1/feed/global?hashtag={name}&type=post,quote&limit={limit}",
-                )
-            )
-    except Exception:
-        # Best-effort: trending fetch may fail; still proceed.
-        pass
-
-    for q in [
-        "lightning",
-        "bolt11",
-        "lnbc",
-        "lnurl",
-        "phoenixd",
-        "phoenix-cli",
-        "lightning.json",
-    ]:
-        endpoints.append((f"search:{q}", f"https://moltx.io/v1/search/posts?q={q}&limit={limit}"))
+    # For raw scale, use a small set of high-yield endpoints and paginate them.
+    endpoints: List[Tuple[str, str]] = [
+        ("global", "https://moltx.io/v1/feed/global?type=post,quote"),
+        ("search:lightning", "https://moltx.io/v1/search/posts?q=lightning"),
+        ("search:lnurl", "https://moltx.io/v1/search/posts?q=lnurl"),
+        ("search:bolt11", "https://moltx.io/v1/search/posts?q=bolt11"),
+        ("search:phoenixd", "https://moltx.io/v1/search/posts?q=phoenixd"),
+        ("search:lightning.json", "https://moltx.io/v1/search/posts?q=lightning.json"),
+    ]
 
     seen = set()
 
