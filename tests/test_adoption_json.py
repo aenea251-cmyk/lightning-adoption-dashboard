@@ -54,7 +54,7 @@ class TestAdoptionJson(unittest.TestCase):
         src = self.data["sources"].get("hotmolts")
         self.assertIsNotNone(src)
         # Either it worked or it failed gracefully, but it should not crash the pipeline.
-        self.assertIn(src.get("mode"), {"cached_html_list", "failed_gracefully"})
+        self.assertIn(src.get("mode"), {"cached_html_list", "sitemap_posts", "failed_gracefully"})
 
 
 if __name__ == "__main__":
