@@ -26,9 +26,13 @@ from html.parser import HTMLParser
 from typing import Dict, List, Optional, Tuple
 from urllib.request import Request, urlopen
 
-LIMIT = int(os.environ.get("LIMIT", "100"))
+# Per-request limit. MoltX supports pagination via `offset`.
+LIMIT = int(os.environ.get("LIMIT", "200"))
 TOP_HASHTAGS = int(os.environ.get("TOP_HASHTAGS", "12"))
 MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY")
+
+# Target number of unique MoltX posts to scan per run.
+TARGET_UNIQUE_POSTS = int(os.environ.get("TARGET_UNIQUE_POSTS", "1000"))
 
 BOLT11_RE = re.compile(r"\bln(?:bc|tb|bcrt)[0-9a-z]+\b", re.IGNORECASE)
 LNURL_RE = re.compile(r"\blnurl[0-9a-z]+\b", re.IGNORECASE)
@@ -83,6 +87,27 @@ def get_moltx_posts(j: dict):
     return (j.get("data") or {}).get("posts") or []
 
 
+def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int):
+    """Iterate posts from a MoltX endpoint that supports limit+offset.
+
+    MoltX responses include `data.offset`, so we can page by incrementing offset.
+    """
+    offset = 0
+    emitted = 0
+    while emitted < max_items:
+        url = f"{url_base}&limit={per_page}&offset={offset}"
+        j = fetch_json(url, api_key=api_key)
+        posts = get_moltx_posts(j)
+        if not posts:
+            break
+        for p in posts:
+            yield p
+            emitted += 1
+            if emitted >= max_items:
+                break
+        offset += per_page
+
+
 def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
     if not MOLTX_API_KEY:
         return (
@@ -105,7 +130,8 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
     # Collect from multiple endpoints to increase coverage.
     endpoints: List[Tuple[str, str]] = []
 
-    endpoints.append(("global", f"https://moltx.io/v1/feed/global?type=post,quote&limit={limit}"))
+    # Paginate the global feed; this is how we get from 100 → 10,000s.
+    endpoints.append(("global", "https://moltx.io/v1/feed/global?type=post,quote"))
 
     for tag in ["lightning", "bitcoin", "lnurl", "phoenixd", "tips", "tipjar"]:
         endpoints.append(
@@ -166,13 +192,23 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
 
     for label, url in endpoints:
         try:
-            j = fetch_json(url, api_key=MOLTX_API_KEY)
+            if label == "global":
+                posts = list(
+                    iter_paginated(
+                        url,
+                        api_key=MOLTX_API_KEY,
+                        per_page=limit,
+                        max_items=TARGET_UNIQUE_POSTS,
+                    )
+                )
+            else:
+                j = fetch_json(url, api_key=MOLTX_API_KEY)
+                posts = get_moltx_posts(j)
         except Exception:
             meta["errors"] += 1
             continue
 
         meta["endpoints_queried"] += 1
-        posts = get_moltx_posts(j)
 
         unique = []
         for p in posts:
@@ -181,6 +217,10 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
                 continue
             seen.add(pid)
             unique.append(p)
+
+            # Stop early once we hit our unique-post budget.
+            if label == "global" and len(seen) >= TARGET_UNIQUE_POSTS:
+                break
 
         meta["unique_posts"] += len(unique)
 
