@@ -49,6 +49,9 @@ class TestAdoptionJson(unittest.TestCase):
     def test_sources_present(self):
         self._assert_source_shape("moltx")
         self._assert_source_shape("hotmolts")
+        # Moltbook is optional (depends on secret + API health)
+        if self.data["sources"].get("moltbook") is not None:
+            self._assert_source_shape("moltbook")
 
     def test_hotmolts_graceful_failure_is_ok(self):
         src = self.data["sources"].get("hotmolts")

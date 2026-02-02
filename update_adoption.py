@@ -3,10 +3,12 @@
 
 Sources:
 - MoltX API (global feed + hashtags + search)  [requires MOLTX_API_KEY]
+- Moltbook API (new posts pagination)          [requires MOLTBOOK_API_KEY]
 - HotMolts (cached, read-only Moltbook mirror) [no auth]
 
 Env:
 - MOLTX_API_KEY (optional; if missing, MoltX is skipped)
+- MOLTBOOK_API_KEY (optional; if missing, Moltbook is skipped)
 - LIMIT (default 100)
 - TOP_HASHTAGS (default 12)
 
@@ -32,6 +34,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 LIMIT = int(os.environ.get("LIMIT", "200"))
 TOP_HASHTAGS = int(os.environ.get("TOP_HASHTAGS", "12"))
 MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY")
+MOLTBOOK_API_KEY = os.environ.get("MOLTBOOK_API_KEY")
 
 # Target number of unique MoltX posts to scan per run.
 # Default bumped aggressively to drive real progress toward 10,000s.
@@ -80,14 +83,14 @@ def scan_text(t: str, counts: Dict[str, int]) -> bool:
 
 def fetch_json(url: str, *, api_key: Optional[str] = None) -> dict:
     headers = {
-        "User-Agent": "lightning-adoption-dashboard/0.4",
+        "User-Agent": "lightning-adoption-dashboard/0.5",
         "Accept": "application/json",
     }
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
 
     req = Request(url, headers=headers)
-    with urlopen(req, timeout=12) as resp:
+    with urlopen(req, timeout=15) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -227,6 +230,110 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
     return (
         {
             "mode": "api_multi_endpoints",
+            "meta": meta,
+            "counts": counts,
+            "highlights": highlights[:20],
+        },
+        None,
+    )
+
+
+# -----------------------
+# Moltbook collector (API)
+# -----------------------
+
+def get_moltbook_posts(j: dict):
+    # Moltbook returns {success:true, posts:[...]}
+    return j.get("posts") or []
+
+
+def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict, Optional[str]]:
+    if not MOLTBOOK_API_KEY:
+        return (
+            {
+                "mode": "skipped",
+                "meta": {"reason": "MOLTBOOK_API_KEY missing"},
+                "counts": {
+                    "posts_scanned": 0,
+                    "lightning_mentions": 0,
+                    "bolt11_mentions": 0,
+                    "lnurl_mentions": 0,
+                    "phoenixd_mentions": 0,
+                    "tipjar_wellknown_mentions": 0,
+                },
+                "highlights": [],
+            },
+            None,
+        )
+
+    counts = {
+        "posts_scanned": 0,
+        "lightning_mentions": 0,
+        "bolt11_mentions": 0,
+        "lnurl_mentions": 0,
+        "phoenixd_mentions": 0,
+        "tipjar_wellknown_mentions": 0,
+    }
+
+    meta = {
+        "endpoint": "https://www.moltbook.com/api/v1/posts",
+        "per_page": per_page,
+        "errors": 0,
+        "unique_posts": 0,
+    }
+
+    highlights: List[dict] = []
+    seen = set()
+
+    # Best-effort offset pagination.
+    offset = 0
+    while counts["posts_scanned"] < target_posts:
+        url = f"https://www.moltbook.com/api/v1/posts?sort=new&limit={per_page}&offset={offset}"
+
+        j = None
+        for attempt in range(5):
+            try:
+                j = fetch_json(url, api_key=MOLTBOOK_API_KEY)
+                break
+            except Exception:
+                time.sleep(0.8 * (attempt + 1))
+
+        if j is None:
+            meta["errors"] += 1
+            break
+
+        posts = get_moltbook_posts(j)
+        if not posts:
+            break
+
+        for p in posts:
+            pid = p.get("id") or p.get("url") or None
+            if pid and pid in seen:
+                continue
+            if pid:
+                seen.add(pid)
+
+            title = p.get("title") or ""
+            content = p.get("content") or ""
+            t = f"{title}\n\n{content}".strip()
+            if not t:
+                continue
+
+            counts["posts_scanned"] += 1
+            if scan_text(t, counts):
+                # Moltbook provides url sometimes; fall back to none.
+                highlights.append({"url": p.get("url") or "https://www.moltbook.com/"})
+
+            if counts["posts_scanned"] >= target_posts:
+                break
+
+        offset += per_page
+        meta["unique_posts"] = len(seen)
+        time.sleep(0.2)
+
+    return (
+        {
+            "mode": "api_paginated",
             "meta": meta,
             "counts": counts,
             "highlights": highlights[:20],
@@ -414,12 +521,14 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
 
 def main():
     moltx, _ = collect_moltx(LIMIT)
+    moltbook, _ = collect_moltbook()
     hotmolts, _ = collect_hotmolts()
 
     out = {
         "updated_at": utc_now_iso(),
         "sources": {
             "moltx": moltx,
+            "moltbook": moltbook,
             "hotmolts": hotmolts,
         },
     }

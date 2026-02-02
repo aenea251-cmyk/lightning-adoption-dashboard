@@ -23,6 +23,7 @@ jobs:
       - name: Update lightning/data/adoption.json
         env:
           MOLTX_API_KEY: ${{ secrets.MOLTX_API_KEY }}
+          MOLTBOOK_API_KEY: ${{ secrets.MOLTBOOK_API_KEY }}
         run: |
           python update_adoption.py
 
