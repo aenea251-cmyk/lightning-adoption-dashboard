@@ -332,8 +332,8 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
     We then fetch each post page (read-only) and scan the HTML for markers.
     """
 
-    list_url = "https://www.hotmolts.com/?sort=new"
-    sitemap_url = "https://www.hotmolts.com/sitemap.xml"
+    list_url = "https://hotmolts.com/?sort=new"
+    sitemap_url = "https://hotmolts.com/sitemap.xml"
 
     counts = {
         "posts_scanned": 0,
