@@ -1,3 +1,80 @@
+function el(tag, attrs = {}, children = []) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of children) e.appendChild(c);
+  return e;
+}
+
+function normCounts(counts = {}) {
+  return {
+    scanned: counts.posts_scanned ?? counts.pages_scanned ?? 0,
+    scannedLabel: (counts.posts_scanned != null) ? 'Posts scanned' : 'Pages scanned',
+    lightning: counts.lightning_mentions ?? 0,
+    bolt11: counts.bolt11_mentions ?? 0,
+    lnurl: counts.lnurl_mentions ?? 0,
+    phoenixd: counts.phoenixd_mentions ?? 0,
+    tipjar: counts.tipjar_wellknown_mentions ?? 0,
+  };
+}
+
+function sourceLabel(key) {
+  if (key === 'moltx') return 'MoltX';
+  if (key === 'hotmolts') return 'HotMolts (cached Moltbook)';
+  return key;
+}
+
+function renderKpis(kpisEl, counts) {
+  const c = normCounts(counts);
+  const rows = [
+    [c.scannedLabel, c.scanned],
+    ['Lightning mentions', c.lightning],
+    ['BOLT11 mentions', c.bolt11],
+    ['LNURL mentions', c.lnurl],
+    ['phoenixd mentions', c.phoenixd],
+    ['TipJar well-known mentions', c.tipjar],
+  ];
+
+  kpisEl.innerHTML = '';
+  for (const [label, value] of rows) {
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML = `<div class="kpi">${value}</div><div class="muted">${label}</div>`;
+    kpisEl.appendChild(d);
+  }
+}
+
+function renderHighlights(highlightsEl, highlights) {
+  highlightsEl.innerHTML = '';
+  if (!highlights || !highlights.length) {
+    const li = document.createElement('li');
+    li.className = 'muted';
+    li.textContent = 'No highlights yet.';
+    highlightsEl.appendChild(li);
+    return;
+  }
+
+  for (const h of highlights) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = h.url;
+    a.textContent = h.url;
+    a.rel = 'noreferrer noopener';
+    a.target = '_blank';
+    li.appendChild(a);
+    if (h.reason) {
+      const s = document.createElement('span');
+      s.className = 'muted';
+      s.textContent = ` — ${h.reason}`;
+      li.appendChild(s);
+    }
+    highlightsEl.appendChild(li);
+  }
+}
+
 async function main() {
   const statusEl = document.getElementById('status');
   const kpisEl = document.getElementById('kpis');
@@ -15,65 +92,79 @@ async function main() {
   }
 
   const updated = data.updated_at || 'unknown';
-  const src = data.sources && data.sources.moltx;
-  const counts = (src && src.counts) || {};
-  const mode = (src && src.mode) || 'unknown';
-  const meta = (src && src.meta) || {};
+  const sources = (data.sources || {});
 
-  const metaBits = [];
-  if (meta.endpoints_queried != null) metaBits.push(`endpoints: <code>${meta.endpoints_queried}</code>`);
-  if (meta.unique_posts != null) metaBits.push(`unique posts: <code>${meta.unique_posts}</code>`);
+  // --- Status + source selector + side-by-side summary ---
+  const order = ['moltx', 'hotmolts'].filter(k => sources[k]);
+  const selectedKey = order[0] || Object.keys(sources)[0];
 
-  statusEl.innerHTML = `<div><b>Updated:</b> <code>${updated}</code></div>`
-    + `<div class="muted">Source: MoltX (${mode})${metaBits.length ? ' · ' + metaBits.join(' · ') : ''}</div>`;
+  const selector = el('select', { id: 'sourceSelect' });
+  for (const k of order) {
+    selector.appendChild(el('option', { value: k, html: sourceLabel(k) }));
+  }
+  selector.value = selectedKey;
 
-  const scanned = (counts.posts_scanned ?? counts.pages_scanned ?? 0);
-  const scannedLabel = (counts.posts_scanned != null) ? 'Posts scanned' : 'Pages scanned';
+  const summary = el('div', { class: 'grid', id: 'sourceSummary' });
+  for (const k of order) {
+    const src = sources[k] || {};
+    const mode = src.mode || 'unknown';
+    const meta = src.meta || {};
+    const c = normCounts(src.counts || {});
 
-  const rows = [
-    [scannedLabel, scanned],
-    ['Lightning mentions', counts.lightning_mentions ?? 0],
-    ['BOLT11 mentions', counts.bolt11_mentions ?? 0],
-    ['LNURL mentions', counts.lnurl_mentions ?? 0],
-    ['phoenixd mentions', counts.phoenixd_mentions ?? 0],
-    ['TipJar well-known mentions', counts.tipjar_wellknown_mentions ?? 0],
-  ];
+    const bits = [];
+    if (meta.unique_posts != null) bits.push(`unique posts: <code>${meta.unique_posts}</code>`);
+    if (meta.posts_found != null) bits.push(`posts found: <code>${meta.posts_found}</code>`);
+    if (meta.endpoints_queried != null) bits.push(`endpoints: <code>${meta.endpoints_queried}</code>`);
+    if (meta.errors != null && meta.errors) bits.push(`errors: <code>${meta.errors}</code>`);
+    if (meta.error) bits.push(`<span class="muted">${meta.error}</span>`);
 
-  kpisEl.innerHTML = '';
-  for (const [label, value] of rows) {
-    const d = document.createElement('div');
-    d.className = 'card';
-    d.innerHTML = `<div class="kpi">${value}</div><div class="muted">${label}</div>`;
-    kpisEl.appendChild(d);
+    const card = el('div', { class: 'card' });
+    card.innerHTML = `
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <div><b>${sourceLabel(k)}</b></div>
+        <div class="muted"><code>${mode}</code></div>
+      </div>
+      <div class="muted" style="margin-top:6px">
+        ${c.scannedLabel}: <code>${c.scanned}</code>
+        &nbsp;·&nbsp; lightning: <code>${c.lightning}</code>
+        &nbsp;·&nbsp; BOLT11: <code>${c.bolt11}</code>
+        &nbsp;·&nbsp; LNURL: <code>${c.lnurl}</code>
+        &nbsp;·&nbsp; phoenixd: <code>${c.phoenixd}</code>
+        &nbsp;·&nbsp; tipjar: <code>${c.tipjar}</code>
+      </div>
+      ${bits.length ? `<div class="muted" style="margin-top:6px">${bits.join(' · ')}</div>` : ''}
+    `;
+    summary.appendChild(card);
   }
 
-  const highlights = (src && src.highlights) || [];
-  highlightsEl.innerHTML = '';
-  if (!highlights.length) {
-    const li = document.createElement('li');
-    li.className = 'muted';
-    li.textContent = 'No highlights yet.';
-    highlightsEl.appendChild(li);
-  } else {
-    for (const h of highlights) {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = h.url;
-      a.textContent = h.url;
-      a.rel = 'noreferrer noopener';
-      a.target = '_blank';
-      li.appendChild(a);
-      if (h.reason) {
-        const s = document.createElement('span');
-        s.className = 'muted';
-        s.textContent = ` — ${h.reason}`;
-        li.appendChild(s);
-      }
-      highlightsEl.appendChild(li);
-    }
+  statusEl.innerHTML = '';
+  statusEl.appendChild(el('div', { html: `<div><b>Updated:</b> <code>${updated}</code></div>` }));
+
+  const line = el('div', { class: 'muted' });
+  line.appendChild(document.createTextNode('View: '));
+  line.appendChild(selector);
+  statusEl.appendChild(line);
+
+  const hint = el('div', { class: 'muted', html: 'MoltX is the live network feed; HotMolts is a cached, read-only mirror of Moltbook.' });
+  hint.style.marginTop = '6px';
+  statusEl.appendChild(hint);
+
+  const hr = el('div');
+  hr.style.height = '12px';
+  statusEl.appendChild(hr);
+  statusEl.appendChild(summary);
+
+  function rerender() {
+    const key = selector.value;
+    const src = sources[key] || {};
+    renderKpis(kpisEl, src.counts || {});
+    renderHighlights(highlightsEl, src.highlights || []);
   }
 
-  // Curated payment rails list (static JSON).
+  selector.addEventListener('change', rerender);
+  rerender();
+
+  // --- Curated payment rails list (static JSON). ---
   if (paymentRailsEl) {
     try {
       const res = await fetch('./data/payment_rails.json', { cache: 'no-store' });
