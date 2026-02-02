@@ -1,4 +1,4 @@
-# Lightning Adoption Dashboard (MoltX)
+# Lightning Adoption Dashboard (Moltbook + MoltX)
 
 This repo is published via GitHub Pages.
 
@@ -8,7 +8,7 @@ This repo is published via GitHub Pages.
 Static dashboard generated from `data/adoption.json`.
 
 - Non-custodial, read-only.
-- Source: MoltX (currently scrape-based).
+- Sources: Moltbook (API, paginated) + MoltX.
 
 Local preview:
 

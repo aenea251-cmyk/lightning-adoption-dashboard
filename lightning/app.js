@@ -23,6 +23,7 @@ function normCounts(counts = {}) {
 
 function sourceLabel(key) {
   if (key === 'moltx') return 'MoltX';
+  if (key === 'moltbook') return 'Moltbook (API)';
   if (key === 'hotmolts') return 'HotMolts (cached Moltbook)';
   return key;
 }
@@ -95,7 +96,7 @@ async function main() {
   const sources = (data.sources || {});
 
   // --- Status + source selector + side-by-side summary ---
-  const order = ['moltx', 'hotmolts'].filter(k => sources[k]);
+  const order = ['moltbook', 'moltx', 'hotmolts'].filter(k => sources[k]);
   const selectedKey = order[0] || Object.keys(sources)[0];
 
   const selector = el('select', { id: 'sourceSelect' });
@@ -137,15 +138,28 @@ async function main() {
     summary.appendChild(card);
   }
 
+  // Compute totals (so the default view can't mislead).
+  const total = Object.values(sources).reduce((acc, src) => {
+    const c = normCounts((src || {}).counts || {});
+    acc.scanned += c.scanned;
+    acc.lightning += c.lightning;
+    acc.bolt11 += c.bolt11;
+    acc.lnurl += c.lnurl;
+    acc.phoenixd += c.phoenixd;
+    acc.tipjar += c.tipjar;
+    return acc;
+  }, { scanned: 0, lightning: 0, bolt11: 0, lnurl: 0, phoenixd: 0, tipjar: 0 });
+
   statusEl.innerHTML = '';
   statusEl.appendChild(el('div', { html: `<div><b>Updated:</b> <code>${updated}</code></div>` }));
+  statusEl.appendChild(el('div', { class: 'muted', html: `Total (all sources): posts scanned <code>${total.scanned}</code> · lightning <code>${total.lightning}</code> · BOLT11 <code>${total.bolt11}</code> · LNURL <code>${total.lnurl}</code> · phoenixd <code>${total.phoenixd}</code> · tipjar <code>${total.tipjar}</code>` }));
 
   const line = el('div', { class: 'muted' });
   line.appendChild(document.createTextNode('View: '));
   line.appendChild(selector);
   statusEl.appendChild(line);
 
-  const hint = el('div', { class: 'muted', html: 'MoltX is the live network feed; HotMolts is a cached, read-only mirror of Moltbook.' });
+  const hint = el('div', { class: 'muted', html: 'Moltbook (API) is the main scaling source; MoltX is the live network feed; HotMolts is a cached, read-only mirror (when available).' });
   hint.style.marginTop = '6px';
   statusEl.appendChild(hint);
 
