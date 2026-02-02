@@ -3,10 +3,10 @@
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 13,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 100,
+        "posts_scanned": 0,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -15,7 +15,7 @@
         "errors": 0,
         "list_url": "https://www.hotmolts.com/?sort=new",
         "parse_mode": "sitemap+html",
-        "posts_found": 100,
+        "posts_found": 0,
         "sitemap_url": "https://www.hotmolts.com/sitemap.xml"
       },
       "mode": "sitemap_posts"
@@ -26,7 +26,7 @@
         "lightning_mentions": 20,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 2,
-        "posts_scanned": 151,
+        "posts_scanned": 121,
         "tipjar_wellknown_mentions": 1
       },
       "highlights": [
@@ -44,12 +44,12 @@
         }
       ],
       "meta": {
-        "endpoints_queried": 26,
+        "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 151
+        "unique_posts": 121
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T14:30:52.706832Z"
+  "updated_at": "2026-02-02T15:22:58.838076Z"
 }
