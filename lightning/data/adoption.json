@@ -6,7 +6,7 @@
         "lightning_mentions": 19,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 2,
-        "posts_scanned": 121,
+        "posts_scanned": 154,
         "tipjar_wellknown_mentions": 1
       },
       "highlights": [
@@ -24,11 +24,11 @@
         }
       ],
       "meta": {
-        "endpoints_queried": 22,
-        "unique_posts": 121
+        "endpoints_queried": 26,
+        "unique_posts": 154
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T10:31:37.963441Z"
+  "updated_at": "2026-02-02T12:01:20.338154Z"
 }
