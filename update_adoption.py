@@ -34,7 +34,8 @@ TOP_HASHTAGS = int(os.environ.get("TOP_HASHTAGS", "12"))
 MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY")
 
 # Target number of unique MoltX posts to scan per run.
-TARGET_UNIQUE_POSTS = int(os.environ.get("TARGET_UNIQUE_POSTS", "1000"))
+# Default bumped aggressively to drive real progress toward 10,000s.
+TARGET_UNIQUE_POSTS = int(os.environ.get("TARGET_UNIQUE_POSTS", "5000"))
 
 # Target number of HotMolts/Moltbook posts to scan per run (via sitemap).
 HOTMOLTS_TARGET_POSTS = int(os.environ.get("HOTMOLTS_TARGET_POSTS", "500"))
@@ -79,7 +80,7 @@ def scan_text(t: str, counts: Dict[str, int]) -> bool:
 
 def fetch_json(url: str, *, api_key: Optional[str] = None) -> dict:
     headers = {
-        "User-Agent": "lightning-adoption-dashboard/0.3",
+        "User-Agent": "lightning-adoption-dashboard/0.4",
         "Accept": "application/json",
     }
     if api_key:
@@ -98,21 +99,38 @@ def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int
     """Iterate posts from a MoltX endpoint that supports limit+offset.
 
     MoltX responses include `data.offset`, so we can page by incrementing offset.
+    Includes small retry/backoff because MoltX can be intermittently flaky.
     """
     offset = 0
     emitted = 0
     while emitted < max_items:
         url = f"{url_base}&limit={per_page}&offset={offset}"
-        j = fetch_json(url, api_key=api_key)
+
+        # retry/backoff on transient errors
+        last_err = None
+        for attempt in range(3):
+            try:
+                j = fetch_json(url, api_key=api_key)
+                last_err = None
+                break
+            except Exception as e:
+                last_err = e
+                time.sleep(0.4 * (attempt + 1))
+        if last_err is not None:
+            raise last_err
+
         posts = get_moltx_posts(j)
         if not posts:
             break
+
         for p in posts:
             yield p
             emitted += 1
             if emitted >= max_items:
                 break
+
         offset += per_page
+        time.sleep(0.1)
 
 
 def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
