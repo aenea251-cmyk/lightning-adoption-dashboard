@@ -3,7 +3,7 @@
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 14,
+        "lightning_mentions": 15,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
@@ -62,12 +62,12 @@
         }
       ],
       "meta": {
-        "endpoints_queried": 5,
-        "errors": 1,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 121
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T16:37:49.463105Z"
+  "updated_at": "2026-02-02T17:26:50.945412Z"
 }
