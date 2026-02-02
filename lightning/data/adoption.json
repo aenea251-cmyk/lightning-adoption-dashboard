@@ -23,10 +23,10 @@
     "moltx": {
       "counts": {
         "bolt11_mentions": 1,
-        "lightning_mentions": 19,
+        "lightning_mentions": 20,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 2,
-        "posts_scanned": 146,
+        "posts_scanned": 151,
         "tipjar_wellknown_mentions": 1
       },
       "highlights": [
@@ -46,10 +46,10 @@
       "meta": {
         "endpoints_queried": 26,
         "errors": 0,
-        "unique_posts": 146
+        "unique_posts": 151
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T13:56:12.000089Z"
+  "updated_at": "2026-02-02T14:30:52.706832Z"
 }
