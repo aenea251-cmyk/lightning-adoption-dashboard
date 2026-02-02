@@ -26,7 +26,7 @@
         "lightning_mentions": 19,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 2,
-        "posts_scanned": 127,
+        "posts_scanned": 126,
         "tipjar_wellknown_mentions": 1
       },
       "highlights": [
@@ -44,12 +44,12 @@
         }
       ],
       "meta": {
-        "endpoints_queried": 19,
-        "errors": 3,
-        "unique_posts": 127
+        "endpoints_queried": 25,
+        "errors": 1,
+        "unique_posts": 126
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T13:42:54.963499Z"
+  "updated_at": "2026-02-02T13:53:28.186318Z"
 }
