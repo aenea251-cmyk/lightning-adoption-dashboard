@@ -23,8 +23,10 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from html.parser import HTMLParser
+import time
 from typing import Dict, List, Optional, Tuple
 from urllib.request import Request, urlopen
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Per-request limit. MoltX supports pagination via `offset`.
 LIMIT = int(os.environ.get("LIMIT", "200"))
@@ -33,6 +35,11 @@ MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY")
 
 # Target number of unique MoltX posts to scan per run.
 TARGET_UNIQUE_POSTS = int(os.environ.get("TARGET_UNIQUE_POSTS", "1000"))
+
+# Target number of HotMolts/Moltbook posts to scan per run (via sitemap).
+HOTMOLTS_TARGET_POSTS = int(os.environ.get("HOTMOLTS_TARGET_POSTS", "500"))
+# Soft time budget (seconds) for HotMolts scanning so the hourly workflow finishes reliably.
+HOTMOLTS_TIME_BUDGET_SEC = float(os.environ.get("HOTMOLTS_TIME_BUDGET_SEC", "25"))
 
 BOLT11_RE = re.compile(r"\bln(?:bc|tb|bcrt)[0-9a-z]+\b", re.IGNORECASE)
 LNURL_RE = re.compile(r"\blnurl[0-9a-z]+\b", re.IGNORECASE)
@@ -79,7 +86,7 @@ def fetch_json(url: str, *, api_key: Optional[str] = None) -> dict:
         headers["Authorization"] = f"Bearer {api_key}"
 
     req = Request(url, headers=headers)
-    with urlopen(req, timeout=30) as resp:
+    with urlopen(req, timeout=12) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -320,16 +327,35 @@ class HotMoltsParser(HTMLParser):
 
 
 def fetch_html(url: str) -> str:
-    req = Request(url, headers={"User-Agent": "lightning-adoption-dashboard/0.3", "Accept": "text/html"})
-    with urlopen(req, timeout=30) as resp:
+    req = Request(
+        url,
+        headers={
+            "User-Agent": "lightning-adoption-dashboard/0.4",
+            "Accept": "text/html,application/xml",
+        },
+    )
+    with urlopen(req, timeout=12) as resp:
         return resp.read().decode("utf-8", "ignore")
 
 
+def _extract_sitemap_locs(xml: str) -> List[str]:
+    # Minimal XML parsing without dependencies.
+    locs = re.findall(r"<loc>([^<]+)</loc>", xml)
+    return [l.strip() for l in locs if l.strip()]
+
+
 def collect_hotmolts() -> Tuple[dict, Optional[str]]:
-    url = "https://www.hotmolts.com/?sort=new"
+    """Collect Moltbook signals via HotMolts cached mirror.
+
+    Key change for scaling: use the HotMolts sitemap to get deep history quickly.
+    We then fetch each post page (read-only) and scan the HTML for markers.
+    """
+
+    list_url = "https://www.hotmolts.com/?sort=new"
+    sitemap_url = "https://www.hotmolts.com/sitemap.xml"
 
     counts = {
-        "pages_scanned": 0,
+        "posts_scanned": 0,
         "lightning_mentions": 0,
         "bolt11_mentions": 0,
         "lnurl_mentions": 0,
@@ -338,43 +364,54 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
     }
 
     meta = {
-        "url": url,
+        "list_url": list_url,
+        "sitemap_url": sitemap_url,
         "posts_found": 0,
-        "parse_mode": "html_best_effort",
+        "errors": 0,
+        "parse_mode": "sitemap+html",
         "error": None,
     }
 
     highlights: List[dict] = []
 
     try:
-        html = fetch_html(url)
-        counts["pages_scanned"] += 1
+        sm = fetch_html(sitemap_url)
+        locs = _extract_sitemap_locs(sm)
+        post_urls = [u for u in locs if "/post/" in u]
 
-        parser = HotMoltsParser()
-        parser.feed(html)
-        posts = parser.posts
+        meta["posts_found"] = len(post_urls)
 
-        # De-dupe by URL.
-        seen = set()
-        unique_posts: List[HotMoltsPost] = []
-        for p in posts:
-            if p.url in seen:
-                continue
-            seen.add(p.url)
-            unique_posts.append(p)
+        # Deterministic slice to keep runs stable.
+        to_scan = post_urls[: max(0, HOTMOLTS_TARGET_POSTS)]
 
-        meta["posts_found"] = len(unique_posts)
+        started = time.monotonic()
 
-        for p in unique_posts:
-            t = f"{p.title}\n\n{p.content}".strip()
-            if not t:
-                continue
-            if scan_text(t, counts):
-                highlights.append({"url": p.url, "reason": "marker match"})
+        def work(u: str):
+            try:
+                return u, fetch_html(u), None
+            except Exception as e:
+                return u, None, e
+
+        # Parallel fetch to scale to 1,000s quickly within the time budget.
+        # Keep workers modest to avoid hammering HotMolts.
+        max_workers = int(os.environ.get("HOTMOLTS_WORKERS", "16"))
+        with ThreadPoolExecutor(max_workers=max_workers) as ex:
+            futs = [ex.submit(work, u) for u in to_scan]
+            for fut in as_completed(futs):
+                if (time.monotonic() - started) > HOTMOLTS_TIME_BUDGET_SEC:
+                    break
+                u, html, err = fut.result()
+                if err is not None or not html:
+                    meta["errors"] += 1
+                    continue
+
+                counts["posts_scanned"] += 1
+                if scan_text(html, counts):
+                    highlights.append({"url": u, "reason": "marker match"})
 
         return (
             {
-                "mode": "cached_html_list",
+                "mode": "sitemap_posts",
                 "meta": meta,
                 "counts": counts,
                 "highlights": highlights[:20],
@@ -383,7 +420,6 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
         )
     except Exception as e:
         meta["error"] = f"{type(e).__name__}: {e}"
-        # Fail gracefully: return empty counts but valid structure.
         return (
             {
                 "mode": "failed_gracefully",
