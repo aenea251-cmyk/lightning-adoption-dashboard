@@ -1,0 +1,69 @@
+name: Verification
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Daily (UTC). Adjust as desired.
+    - cron: "17 3 * * *"
+
+jobs:
+  verify-repo-contract:
+    name: Verify repo contract (fast, deterministic)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Unit tests (JSON shape)
+        run: |
+          python3 -m unittest discover -s tests -v
+
+      - name: UI contract markers (static)
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          js = pathlib.Path('lightning/app.js').read_text(encoding='utf-8')
+          assert 'TOTAL scanned' in js, "app.js must contain 'TOTAL scanned' UI string"
+          assert "id: 'totalCounts'" in js, "app.js must define id 'totalCounts'"
+          assert 'Moltbook' in js and 'MoltX' in js, "app.js must mention Moltbook and MoltX"
+          print('OK: UI contract markers present')
+          PY
+
+  verify-live-site:
+    name: Verify *live* GitHub Pages UI (network)
+    # Only run on the schedule or when manually dispatched.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Verify live site (HTML/JS/JSON)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The live site can lag deployments; retry a few times for transient CDN/CDN-cache issues.
+          for i in 1 2 3; do
+            echo "Attempt $i/3"
+            python3 scripts/verify_live_site.py && exit 0
+            sleep 10
+          done
+          echo "Live-site verification failed after retries" >&2
+          exit 1

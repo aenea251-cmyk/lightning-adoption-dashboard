@@ -16,3 +16,11 @@ Local preview:
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
+
+Local/live self-check (verifies UI markers + sources on the *deployed* GitHub Pages site):
+
+```bash
+python3 scripts/verify_live_site.py
+# or
+python3 scripts/verify_live_site.py --base-url http://localhost:8000
+```

@@ -152,7 +152,12 @@ async function main() {
 
   statusEl.innerHTML = '';
   statusEl.appendChild(el('div', { html: `<div><b>Updated:</b> <code>${updated}</code></div>` }));
-  statusEl.appendChild(el('div', { class: 'muted', html: `Total (all sources): posts scanned <code>${total.scanned}</code> · lightning <code>${total.lightning}</code> · BOLT11 <code>${total.bolt11}</code> · LNURL <code>${total.lnurl}</code> · phoenixd <code>${total.phoenixd}</code> · tipjar <code>${total.tipjar}</code>` }));
+  // DOM marker used by CI/local verification.
+  statusEl.appendChild(el('div', {
+    class: 'muted',
+    id: 'totalCounts',
+    html: `TOTAL scanned (all sources): posts <code>${total.scanned}</code> · lightning <code>${total.lightning}</code> · BOLT11 <code>${total.bolt11}</code> · LNURL <code>${total.lnurl}</code> · phoenixd <code>${total.phoenixd}</code> · tipjar <code>${total.tipjar}</code>`,
+  }));
 
   const line = el('div', { class: 'muted' });
   line.appendChild(document.createTextNode('View: '));
