@@ -117,7 +117,8 @@ def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int
                 last_err = e
                 time.sleep(0.4 * (attempt + 1))
         if last_err is not None:
-            raise last_err
+            # Stop paging on persistent errors; keep best-effort progress.
+            break
 
         posts = get_moltx_posts(j)
         if not posts:
@@ -130,7 +131,7 @@ def iter_paginated(url_base: str, *, api_key: str, per_page: int, max_items: int
                 break
 
         offset += per_page
-        time.sleep(0.1)
+        time.sleep(0.2)
 
 
 def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
