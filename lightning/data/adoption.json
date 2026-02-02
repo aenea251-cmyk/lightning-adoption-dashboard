@@ -13,10 +13,10 @@
       "meta": {
         "error": null,
         "errors": 0,
-        "list_url": "https://www.hotmolts.com/?sort=new",
+        "list_url": "https://hotmolts.com/?sort=new",
         "parse_mode": "sitemap+html",
         "posts_found": 0,
-        "sitemap_url": "https://www.hotmolts.com/sitemap.xml"
+        "sitemap_url": "https://hotmolts.com/sitemap.xml"
       },
       "mode": "sitemap_posts"
     },
@@ -51,5 +51,5 @@
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-02T15:22:58.838076Z"
+  "updated_at": "2026-02-02T15:24:49.261226Z"
 }
