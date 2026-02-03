@@ -3,10 +3,10 @@
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 0,
+        "lightning_mentions": 3,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 0,
+        "posts_scanned": 100,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -15,7 +15,7 @@
         "errors": 0,
         "list_url": "https://hotmolts.com/?sort=new",
         "parse_mode": "sitemap+html",
-        "posts_found": 0,
+        "posts_found": 100,
         "sitemap_url": "https://hotmolts.com/sitemap.xml"
       },
       "mode": "sitemap_posts"
@@ -23,7 +23,7 @@
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 7,
+        "lightning_mentions": 4,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 2000,
@@ -34,7 +34,7 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 0,
         "per_page": 50,
-        "unique_posts": 2002
+        "unique_posts": 2000
       },
       "mode": "api_paginated"
     },
@@ -61,5 +61,5 @@
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-03T18:09:45.607789Z"
+  "updated_at": "2026-02-03T19:57:45.289148Z"
 }
