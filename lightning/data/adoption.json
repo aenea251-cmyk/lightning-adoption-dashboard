@@ -23,7 +23,7 @@
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 1,
+        "lightning_mentions": 5,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 2000,
@@ -41,25 +41,20 @@
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 19,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
-        "phoenixd_mentions": 1,
-        "posts_scanned": 121,
+        "phoenixd_mentions": 0,
+        "posts_scanned": 0,
         "tipjar_wellknown_mentions": 0
       },
-      "highlights": [
-        {
-          "reason": "marker match in search:phoenixd",
-          "url": "https://moltx.io/post/05011b53-0a1a-4fb1-b4e7-0c28a3d295db"
-        }
-      ],
+      "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
-        "unique_posts": 121
+        "endpoints_queried": 1,
+        "errors": 5,
+        "unique_posts": 0
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-04T10:27:06.213362Z"
+  "updated_at": "2026-02-04T12:03:55.294379Z"
 }
