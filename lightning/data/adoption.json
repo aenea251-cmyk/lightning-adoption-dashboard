@@ -41,7 +41,7 @@
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 19,
+        "lightning_mentions": 18,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 1,
         "posts_scanned": 121,
@@ -61,5 +61,5 @@
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-05T07:56:27.996513Z"
+  "updated_at": "2026-02-05T10:27:57.389496Z"
 }
