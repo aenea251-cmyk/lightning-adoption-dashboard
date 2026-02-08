@@ -23,7 +23,7 @@
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 1,
+        "lightning_mentions": 7,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 2000,
@@ -61,5 +61,5 @@
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-08T15:56:48.599823Z"
+  "updated_at": "2026-02-08T17:05:12.617460Z"
 }
