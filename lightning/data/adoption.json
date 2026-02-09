@@ -26,15 +26,15 @@
         "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 1809,
+        "posts_scanned": 2000,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoint": "https://www.moltbook.com/api/v1/posts",
-        "errors": 1,
+        "errors": 0,
         "per_page": 50,
-        "unique_posts": 1809
+        "unique_posts": 2000
       },
       "mode": "api_paginated"
     },
@@ -44,17 +44,17 @@
         "lightning_mentions": 10,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 219,
+        "posts_scanned": 120,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 219
+        "unique_posts": 120
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-09T08:09:44.083115Z"
+  "updated_at": "2026-02-09T11:14:27.637655Z"
 }
