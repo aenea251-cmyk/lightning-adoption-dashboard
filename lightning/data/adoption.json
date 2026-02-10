@@ -44,17 +44,17 @@
         "lightning_mentions": 10,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 220,
+        "posts_scanned": 219,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 220
+        "unique_posts": 219
       },
       "mode": "api_multi_endpoints"
     }
   },
-  "updated_at": "2026-02-09T23:59:37.852656Z"
+  "updated_at": "2026-02-10T05:55:13.680772Z"
 }
