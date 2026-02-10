@@ -65,10 +65,13 @@ MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY") or _read_secret_file("secrets/mo
 MOLTBOOK_API_KEY = os.environ.get("MOLTBOOK_API_KEY") or _read_secret_file("secrets/moltbook_api_key_old.txt")
 
 # Target number of unique MoltX posts to scan per run.
-# Default bumped aggressively to drive real progress toward 10,000s.
-TARGET_UNIQUE_POSTS = int(os.environ.get("TARGET_UNIQUE_POSTS", "5000"))
+# NOTE: scaled up via env in GitHub Actions.
+MOLTX_TARGET_UNIQUE_POSTS = int(os.environ.get("MOLTX_TARGET_UNIQUE_POSTS", os.environ.get("TARGET_UNIQUE_POSTS", "5000")))
 
-# Target number of HotMolts/Moltbook posts to scan per run (via sitemap).
+# Target number of Moltbook posts to scan per run.
+MOLTBOOK_TARGET_POSTS = int(os.environ.get("MOLTBOOK_TARGET_POSTS", "2000"))
+
+# Target number of HotMolts posts to scan per run (via sitemap).
 HOTMOLTS_TARGET_POSTS = int(os.environ.get("HOTMOLTS_TARGET_POSTS", "500"))
 # Soft time budget (seconds) for HotMolts scanning so the hourly workflow finishes reliably.
 HOTMOLTS_TIME_BUDGET_SEC = float(os.environ.get("HOTMOLTS_TIME_BUDGET_SEC", "25"))
@@ -238,7 +241,7 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
                         url,
                         api_key=MOLTX_API_KEY,
                         per_page=limit,
-                        max_items=TARGET_UNIQUE_POSTS,
+                        max_items=MOLTX_TARGET_UNIQUE_POSTS,
                     )
                 )
             else:
@@ -259,7 +262,7 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
             unique.append(p)
 
             # Stop early once we hit our unique-post budget.
-            if label == "global" and len(seen) >= TARGET_UNIQUE_POSTS:
+            if label == "global" and len(seen) >= MOLTX_TARGET_UNIQUE_POSTS:
                 break
 
         meta["unique_posts"] += len(unique)
@@ -298,7 +301,24 @@ def get_moltbook_posts(j: dict):
     return j.get("posts") or []
 
 
-def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict, Optional[str]]:
+def _load_state() -> dict:
+    try:
+        with open("lightning/data/state.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"moltbook_offset": 0, "moltbook_last_run_at": None}
+
+
+def _save_state(state: dict) -> None:
+    os.makedirs("lightning/data", exist_ok=True)
+    with open("lightning/data/state.json", "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+
+
+def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict, Optional[str]]:
+    if target_posts is None:
+        target_posts = MOLTBOOK_TARGET_POSTS
+
     if not MOLTBOOK_API_KEY:
         return (
             {
@@ -312,6 +332,7 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
                     "phoenixd_mentions": 0,
                     "tipjar_wellknown_mentions": 0,
                 },
+                "rails": {},
                 "highlights": [],
             },
             None,
@@ -337,8 +358,9 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
     rail_counts: Dict[str, int] = {}
     seen = set()
 
-    # Best-effort offset pagination.
-    offset = 0
+    # Best-effort offset pagination with persistent cursor.
+    state = _load_state()
+    offset = int(state.get("moltbook_offset") or 0)
     while counts["posts_scanned"] < target_posts:
         url = f"https://www.moltbook.com/api/v1/posts?sort=new&limit={per_page}&offset={offset}"
 
@@ -382,7 +404,18 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
 
         offset += per_page
         meta["unique_posts"] = len(seen)
+
+        # Persist cursor every page so long runs can resume.
+        state["moltbook_offset"] = offset
+        state["moltbook_last_run_at"] = utc_now_iso()
+        _save_state(state)
+
         time.sleep(0.2)
+
+    # Final cursor write.
+    state["moltbook_offset"] = offset
+    state["moltbook_last_run_at"] = utc_now_iso()
+    _save_state(state)
 
     return (
         {
