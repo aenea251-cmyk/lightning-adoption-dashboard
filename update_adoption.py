@@ -514,9 +514,61 @@ def fetch_html(url: str) -> str:
 
 
 def _extract_sitemap_locs(xml: str) -> List[str]:
-    # Minimal XML parsing without dependencies.
+    """Extract <loc> entries from either a urlset or sitemapindex."""
     locs = re.findall(r"<loc>([^<]+)</loc>", xml)
     return [l.strip() for l in locs if l.strip()]
+
+
+def _collect_hotmolts_post_urls(sitemap_url: str, *, max_posts: int) -> List[str]:
+    """Fetch HotMolts sitemap(s) and return post URLs.
+
+    HotMolts may serve either:
+    - a direct urlset with post URLs
+    - a sitemap index pointing to multiple sub-sitemaps
+
+    We follow sub-sitemaps until we collect max_posts post URLs.
+    """
+    seen_sm = set()
+    seen_posts = set()
+    post_urls: List[str] = []
+
+    def add_posts_from_xml(xml: str):
+        nonlocal post_urls
+        locs = _extract_sitemap_locs(xml)
+        # If this looks like a sitemap index (lots of .xml), follow those.
+        sm_urls = [u for u in locs if u.endswith('.xml') and 'sitemap' in u]
+        candidate_posts = [u for u in locs if '/post/' in u]
+        return sm_urls, candidate_posts
+
+    # BFS over sitemaps
+    queue = [sitemap_url]
+    while queue and len(post_urls) < max_posts:
+        sm = queue.pop(0)
+        if sm in seen_sm:
+            continue
+        seen_sm.add(sm)
+
+        try:
+            xml = fetch_html(sm)
+        except Exception:
+            continue
+
+        sm_urls, candidate_posts = add_posts_from_xml(xml)
+
+        for u in candidate_posts:
+            if u in seen_posts:
+                continue
+            seen_posts.add(u)
+            post_urls.append(u)
+            if len(post_urls) >= max_posts:
+                break
+
+        # enqueue sub-sitemaps
+        for u in sm_urls:
+            if u not in seen_sm:
+                queue.append(u)
+
+    return post_urls
 
 
 def collect_hotmolts() -> Tuple[dict, Optional[str]]:
@@ -551,9 +603,7 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
     rail_counts: Dict[str, int] = {}
 
     try:
-        sm = fetch_html(sitemap_url)
-        locs = _extract_sitemap_locs(sm)
-        post_urls = [u for u in locs if "/post/" in u]
+        post_urls = _collect_hotmolts_post_urls(sitemap_url, max_posts=max(0, HOTMOLTS_TARGET_POSTS))
 
         meta["posts_found"] = len(post_urls)
 
