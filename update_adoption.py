@@ -33,8 +33,36 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Per-request limit. MoltX supports pagination via `offset`.
 LIMIT = int(os.environ.get("LIMIT", "200"))
 TOP_HASHTAGS = int(os.environ.get("TOP_HASHTAGS", "12"))
-MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY")
-MOLTBOOK_API_KEY = os.environ.get("MOLTBOOK_API_KEY")
+
+def _read_secret_file(path: str) -> Optional[str]:
+    """Read a secret from a file without ever printing it.
+
+    Supports both:
+    - paths relative to current working directory
+    - paths relative to this script's directory (so cron can run from anywhere)
+    """
+    candidates = [
+        path,
+        os.path.join(os.path.dirname(__file__), path),
+        # When this repo is under workspace/projects/, secrets usually live at workspace/secrets/.
+        os.path.join(os.path.dirname(__file__), "..", "..", path),
+    ]
+
+    for p in candidates:
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                v = f.read().strip()
+                if v:
+                    return v
+        except FileNotFoundError:
+            continue
+
+    return None
+
+# Prefer explicit env vars, but allow local workspace secrets for cron/agent runs.
+MOLTX_API_KEY = os.environ.get("MOLTX_API_KEY") or _read_secret_file("secrets/moltx_api_key.txt")
+# Moltbook: prefer env, then the claimed-key file used elsewhere in this workspace.
+MOLTBOOK_API_KEY = os.environ.get("MOLTBOOK_API_KEY") or _read_secret_file("secrets/moltbook_api_key_old.txt")
 
 # Target number of unique MoltX posts to scan per run.
 # Default bumped aggressively to drive real progress toward 10,000s.
@@ -51,9 +79,29 @@ KW_LIGHTNING = re.compile(r"\blightning\b", re.IGNORECASE)
 KW_PHOENIXD = re.compile(r"\bphoenixd\b|\bphoenix-cli\b", re.IGNORECASE)
 KW_TIPJAR = re.compile(r"/\.well-known/lightning\.json", re.IGNORECASE)
 
+# Simple “rail mention” rules for a lightweight comparison panel.
+# Count at most once per post/page.
+RAIL_RULES = [
+    ("btc-lightning", "BTC on Lightning", re.compile(r"\b(lightning|bolt11|lnurl|lnbc|lntb|lnbcrt)\b", re.IGNORECASE)),
+    ("usdc-ethereum-erc20", "USDC on Ethereum (ERC20)", re.compile(r"\busdc\b.*\b(ethereum|erc20)\b|\b(ethereum|erc20)\b.*\busdc\b", re.IGNORECASE | re.DOTALL)),
+    ("usdt-tron-trc20", "USDT on Tron (TRC20)", re.compile(r"\busdt\b.*\b(tron|trc20)\b|\b(tron|trc20)\b.*\busdt\b", re.IGNORECASE | re.DOTALL)),
+    ("usdc-solana-spl", "USDC on Solana (SPL)", re.compile(r"\busdc\b.*\b(solana|spl)\b|\b(solana|spl)\b.*\busdc\b", re.IGNORECASE | re.DOTALL)),
+]
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def scan_rails_once(t: str, rail_counts: Dict[str, int]) -> None:
+    """Increment per-rail mention counters (at most once per rail per text blob)."""
+    for rail_id, _label, rx in RAIL_RULES:
+        try:
+            if rx.search(t):
+                rail_counts[rail_id] = rail_counts.get(rail_id, 0) + 1
+        except Exception:
+            # Never let rail comparison break the core adoption scan.
+            continue
 
 
 def scan_text(t: str, counts: Dict[str, int]) -> bool:
@@ -180,6 +228,7 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
     }
 
     highlights: List[dict] = []
+    rail_counts: Dict[str, int] = {}
 
     for label, url in endpoints:
         try:
@@ -222,6 +271,7 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
                 continue
 
             counts["posts_scanned"] += 1
+            scan_rails_once(t, rail_counts)
             if scan_text(t, counts) and pid:
                 highlights.append(
                     {"url": f"https://moltx.io/post/{pid}", "reason": f"marker match in {label}"}
@@ -232,6 +282,7 @@ def collect_moltx(limit: int) -> Tuple[dict, Optional[str]]:
             "mode": "api_multi_endpoints",
             "meta": meta,
             "counts": counts,
+            "rails": rail_counts,
             "highlights": highlights[:20],
         },
         None,
@@ -283,6 +334,7 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
     }
 
     highlights: List[dict] = []
+    rail_counts: Dict[str, int] = {}
     seen = set()
 
     # Best-effort offset pagination.
@@ -320,6 +372,7 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
                 continue
 
             counts["posts_scanned"] += 1
+            scan_rails_once(t, rail_counts)
             if scan_text(t, counts):
                 # Moltbook provides url sometimes; fall back to none.
                 highlights.append({"url": p.get("url") or "https://www.moltbook.com/"})
@@ -336,6 +389,7 @@ def collect_moltbook(target_posts: int = 2000, per_page: int = 50) -> Tuple[dict
             "mode": "api_paginated",
             "meta": meta,
             "counts": counts,
+            "rails": rail_counts,
             "highlights": highlights[:20],
         },
         None,
@@ -461,6 +515,7 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
     }
 
     highlights: List[dict] = []
+    rail_counts: Dict[str, int] = {}
 
     try:
         sm = fetch_html(sitemap_url)
@@ -494,6 +549,7 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
                     continue
 
                 counts["posts_scanned"] += 1
+                scan_rails_once(html, rail_counts)
                 if scan_text(html, counts):
                     highlights.append({"url": u, "reason": "marker match"})
 
@@ -502,6 +558,7 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
                 "mode": "sitemap_posts",
                 "meta": meta,
                 "counts": counts,
+                "rails": rail_counts,
                 "highlights": highlights[:20],
             },
             None,
@@ -513,6 +570,7 @@ def collect_hotmolts() -> Tuple[dict, Optional[str]]:
                 "mode": "failed_gracefully",
                 "meta": meta,
                 "counts": counts,
+                "rails": rail_counts,
                 "highlights": [],
             },
             meta["error"],
@@ -524,8 +582,18 @@ def main():
     moltbook, _ = collect_moltbook()
     hotmolts, _ = collect_hotmolts()
 
+    # Total per-rail counts (summed across sources).
+    rails_total: Dict[str, int] = {}
+    for src in (moltx, moltbook, hotmolts):
+        for k, v in (src.get("rails") or {}).items():
+            try:
+                rails_total[k] = rails_total.get(k, 0) + int(v)
+            except Exception:
+                continue
+
     out = {
         "updated_at": utc_now_iso(),
+        "rails_total": rails_total,
         "sources": {
             "moltx": moltx,
             "moltbook": moltbook,

@@ -48,6 +48,42 @@ function renderKpis(kpisEl, counts) {
   }
 }
 
+function titleForRailId(id) {
+  if (id === 'btc-lightning') return 'BTC (Lightning)';
+  if (id === 'usdc-ethereum-erc20') return 'USDC (ERC20)';
+  if (id === 'usdt-tron-trc20') return 'USDT (TRC20)';
+  if (id === 'usdc-solana-spl') return 'USDC (SPL)';
+  return id;
+}
+
+function renderRailKpis(railKpisEl, railsTotal = {}, railsSelected = {}) {
+  if (!railKpisEl) return;
+
+  const ids = Array.from(new Set([
+    ...Object.keys(railsTotal || {}),
+    ...Object.keys(railsSelected || {}),
+    'btc-lightning',
+    'usdc-ethereum-erc20',
+    'usdt-tron-trc20',
+    'usdc-solana-spl',
+  ])).filter(Boolean);
+
+  railKpisEl.innerHTML = '';
+  for (const id of ids) {
+    const total = (railsTotal && railsTotal[id]) ? Number(railsTotal[id]) : 0;
+    const sel = (railsSelected && railsSelected[id]) ? Number(railsSelected[id]) : 0;
+
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML = `
+      <div class="kpi">${sel}</div>
+      <div class="muted">${titleForRailId(id)} (this view)</div>
+      <div class="muted" style="margin-top:6px">Total (all sources): <code>${total}</code></div>
+    `;
+    railKpisEl.appendChild(d);
+  }
+}
+
 function renderHighlights(highlightsEl, highlights) {
   highlightsEl.innerHTML = '';
   if (!highlights || !highlights.length) {
@@ -81,6 +117,7 @@ async function main() {
   const kpisEl = document.getElementById('kpis');
   const highlightsEl = document.getElementById('highlights');
   const paymentRailsEl = document.getElementById('paymentRails');
+  const railKpisEl = document.getElementById('railKpis');
 
   let data;
   try {
@@ -177,6 +214,7 @@ async function main() {
     const key = selector.value;
     const src = sources[key] || {};
     renderKpis(kpisEl, src.counts || {});
+    renderRailKpis(railKpisEl, data.rails_total || {}, src.rails || {});
     renderHighlights(highlightsEl, src.highlights || []);
   }
 
