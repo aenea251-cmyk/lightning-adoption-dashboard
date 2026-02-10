@@ -370,7 +370,8 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
                 j = fetch_json(url, api_key=MOLTBOOK_API_KEY)
                 break
             except Exception:
-                time.sleep(0.8 * (attempt + 1))
+                # keep retries quick for high-volume paging
+                time.sleep(0.15 * (attempt + 1))
 
         if j is None:
             meta["errors"] += 1
@@ -410,7 +411,8 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
         state["moltbook_last_run_at"] = utc_now_iso()
         _save_state(state)
 
-        time.sleep(0.2)
+        # minimal pacing; rely on frequent scheduled runs for throughput
+        time.sleep(float(os.environ.get("MOLTBOOK_PAGE_SLEEP_SEC", "0.0")))
 
     # Final cursor write.
     state["moltbook_offset"] = offset

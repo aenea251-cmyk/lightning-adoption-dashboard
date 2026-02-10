@@ -3,7 +3,7 @@ name: Update adoption data
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "17 * * * *"  # hourly
+    - cron: "*/10 * * * *"  # every 10 minutes
 
 permissions:
   contents: write
@@ -25,10 +25,11 @@ jobs:
           MOLTX_API_KEY: ${{ secrets.MOLTX_API_KEY }}
           MOLTBOOK_API_KEY: ${{ secrets.MOLTBOOK_API_KEY }}
           # Scale targets (keep increasing until 100k+/day is routine)
-          MOLTBOOK_TARGET_POSTS: "100000"
-          MOLTX_TARGET_UNIQUE_POSTS: "50000"
-          HOTMOLTS_TARGET_POSTS: "20000"
-          HOTMOLTS_TIME_BUDGET_SEC: "300"
+          # Per-run targets; frequent schedule yields 100k+/day.
+          MOLTBOOK_TARGET_POSTS: "20000"
+          MOLTX_TARGET_UNIQUE_POSTS: "10000"
+          HOTMOLTS_TARGET_POSTS: "500"
+          HOTMOLTS_TIME_BUDGET_SEC: "60"
           HOTMOLTS_WORKERS: "24"
         run: |
           python3 update_adoption.py
