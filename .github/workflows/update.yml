@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: update-adoption
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -65,4 +69,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git add lightning/data/adoption.json lightning/data/state.json
           git commit -m "Update adoption data"
-          git push
+
+          # Avoid non-fast-forward failures when multiple runs land close together.
+          git pull --rebase origin main || true
+          git push origin HEAD:main
