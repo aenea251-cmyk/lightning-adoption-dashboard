@@ -24,8 +24,14 @@ jobs:
         env:
           MOLTX_API_KEY: ${{ secrets.MOLTX_API_KEY }}
           MOLTBOOK_API_KEY: ${{ secrets.MOLTBOOK_API_KEY }}
+          # Scale targets (keep increasing until 100k+/day is routine)
+          MOLTBOOK_TARGET_POSTS: "100000"
+          MOLTX_TARGET_UNIQUE_POSTS: "50000"
+          HOTMOLTS_TARGET_POSTS: "20000"
+          HOTMOLTS_TIME_BUDGET_SEC: "300"
+          HOTMOLTS_WORKERS: "24"
         run: |
-          python update_adoption.py
+          python3 update_adoption.py
 
       - name: Smoke test + regression checks (local)
         run: |
@@ -56,6 +62,6 @@ jobs:
           fi
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add lightning/data/adoption.json
-          git commit -m "Update adoption.json"
+          git add lightning/data/adoption.json lightning/data/state.json
+          git commit -m "Update adoption data"
           git push
