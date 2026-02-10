@@ -375,10 +375,20 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
 
         if j is None:
             meta["errors"] += 1
-            break
+            # Don't stop the whole run on a single page failure; advance and keep going.
+            # This is critical for high-volume backfill.
+            offset += per_page
+            state["moltbook_offset"] = offset
+            state["moltbook_last_run_at"] = utc_now_iso()
+            _save_state(state)
+            # After too many failures, bail out.
+            if meta["errors"] >= int(os.environ.get("MOLTBOOK_MAX_ERRORS", "25")):
+                break
+            continue
 
         posts = get_moltbook_posts(j)
         if not posts:
+            # No more posts at this offset.
             break
 
         for p in posts:
