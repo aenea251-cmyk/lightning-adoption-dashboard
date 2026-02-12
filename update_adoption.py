@@ -69,7 +69,9 @@ MOLTBOOK_API_KEY = os.environ.get("MOLTBOOK_API_KEY") or _read_secret_file("secr
 MOLTX_TARGET_UNIQUE_POSTS = int(os.environ.get("MOLTX_TARGET_UNIQUE_POSTS", os.environ.get("TARGET_UNIQUE_POSTS", "5000")))
 
 # Target number of Moltbook posts to scan per run.
-MOLTBOOK_TARGET_POSTS = int(os.environ.get("MOLTBOOK_TARGET_POSTS", "2000"))
+# Default target is intentionally high: the adoption tracker must operate at 100,000s+ items/day
+# via frequent scheduled runs + pagination/backfill. Override with env if needed.
+MOLTBOOK_TARGET_POSTS = int(os.environ.get("MOLTBOOK_TARGET_POSTS", "20000"))
 
 # Target number of HotMolts posts to scan per run (via sitemap).
 HOTMOLTS_TARGET_POSTS = int(os.environ.get("HOTMOLTS_TARGET_POSTS", "500"))
@@ -132,17 +134,54 @@ def scan_text(t: str, counts: Dict[str, int]) -> bool:
 # MoltX collector
 # -----------------------
 
+class RateLimitError(Exception):
+    def __init__(self, retry_after_seconds: float = 3.0, message: str = "rate_limited"):
+        super().__init__(message)
+        self.retry_after_seconds = float(retry_after_seconds or 3.0)
+
+
 def fetch_json(url: str, *, api_key: Optional[str] = None) -> dict:
+    """Fetch JSON with basic resiliency.
+
+    Notes:
+    - Moltbook sometimes returns HTTP 200 with {success:false, error:"Rate limit exceeded", retry_after_seconds:N}
+      so we detect that and raise RateLimitError so callers can back off without burning their error budget.
+    - HTTP 429 also gets translated into RateLimitError.
+    """
+    from urllib.error import HTTPError
+
     headers = {
-        "User-Agent": "lightning-adoption-dashboard/0.5",
+        "User-Agent": "lightning-adoption-dashboard/0.6",
         "Accept": "application/json",
     }
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
 
     req = Request(url, headers=headers)
-    with urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+
+    try:
+        with urlopen(req, timeout=15) as resp:
+            body = resp.read().decode("utf-8")
+    except HTTPError as e:
+        if getattr(e, "code", None) == 429:
+            # Some CDNs don't send Retry-After; default small sleep.
+            ra = e.headers.get("Retry-After") if getattr(e, "headers", None) else None
+            try:
+                ra_s = float(ra) if ra else 3.0
+            except Exception:
+                ra_s = 3.0
+            raise RateLimitError(ra_s, "http_429")
+        raise
+
+    j = json.loads(body)
+
+    # Moltbook API rate limit response can be a JSON object (HTTP 200) with success:false.
+    if isinstance(j, dict) and j.get("success") is False:
+        err = (j.get("error") or "").lower()
+        if "rate limit" in err:
+            raise RateLimitError(j.get("retry_after_seconds") or 3, "rate_limited")
+
+    return j
 
 
 def get_moltx_posts(j: dict):
@@ -361,14 +400,19 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
     # Best-effort offset pagination with persistent cursor.
     state = _load_state()
     offset = int(state.get("moltbook_offset") or 0)
+    pages_ok = 0
     while counts["posts_scanned"] < target_posts:
         url = f"https://www.moltbook.com/api/v1/posts?sort=new&limit={per_page}&offset={offset}"
 
         j = None
-        for attempt in range(5):
+        for attempt in range(8):
             try:
                 j = fetch_json(url, api_key=MOLTBOOK_API_KEY)
                 break
+            except RateLimitError as e:
+                # Respect server-provided backoff; do not burn the error budget / cursor.
+                time.sleep(min(float(e.retry_after_seconds), 10.0))
+                continue
             except Exception:
                 # keep retries quick for high-volume paging
                 time.sleep(0.15 * (attempt + 1))
@@ -390,6 +434,14 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
         if not posts:
             # No more posts at this offset.
             break
+
+        pages_ok += 1
+        if pages_ok == 1 or pages_ok % int(os.environ.get("MOLTBOOK_PROGRESS_EVERY_PAGES", "25")) == 0:
+            # Keep logs sparse but non-empty so long local runs don't get killed for "no output".
+            print(
+                f"[moltbook] pages_ok={pages_ok} offset={offset} scanned={counts['posts_scanned']} errors={meta['errors']}",
+                flush=True,
+            )
 
         for p in posts:
             pid = p.get("id") or p.get("url") or None
