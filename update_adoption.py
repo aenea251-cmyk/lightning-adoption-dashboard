@@ -3,12 +3,12 @@
 
 Sources:
 - MoltX API (global feed + hashtags + search)  [requires MOLTX_API_KEY]
-- Moltbook API (new posts pagination)          [requires MOLTBOOK_API_KEY]
+- Moltbook API (new posts pagination)          [public; API key optional]
 - HotMolts (cached, read-only Moltbook mirror) [no auth]
 
 Env:
 - MOLTX_API_KEY (optional; if missing, MoltX is skipped)
-- MOLTBOOK_API_KEY (optional; if missing, Moltbook is skipped)
+- MOLTBOOK_API_KEY (optional; can increase rate limits but Moltbook works without it)
 - LIMIT (default 100)
 - TOP_HASHTAGS (default 12)
 
@@ -358,24 +358,9 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
     if target_posts is None:
         target_posts = MOLTBOOK_TARGET_POSTS
 
-    if not MOLTBOOK_API_KEY:
-        return (
-            {
-                "mode": "skipped",
-                "meta": {"reason": "MOLTBOOK_API_KEY missing"},
-                "counts": {
-                    "posts_scanned": 0,
-                    "lightning_mentions": 0,
-                    "bolt11_mentions": 0,
-                    "lnurl_mentions": 0,
-                    "phoenixd_mentions": 0,
-                    "tipjar_wellknown_mentions": 0,
-                },
-                "rails": {},
-                "highlights": [],
-            },
-            None,
-        )
+    # Moltbook's /api/v1/posts endpoint is publicly readable.
+    # Use an API key when available (future-proof / higher rate limits), but do not skip when missing.
+    moltbook_api_key = MOLTBOOK_API_KEY or None
 
     counts = {
         "posts_scanned": 0,
@@ -391,6 +376,7 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
         "per_page": per_page,
         "errors": 0,
         "unique_posts": 0,
+        "auth": "bearer" if moltbook_api_key else "none",
     }
 
     highlights: List[dict] = []
@@ -407,7 +393,7 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
         j = None
         for attempt in range(8):
             try:
-                j = fetch_json(url, api_key=MOLTBOOK_API_KEY)
+                j = fetch_json(url, api_key=moltbook_api_key)
                 break
             except RateLimitError as e:
                 # Respect server-provided backoff; do not burn the error budget / cursor.
@@ -433,6 +419,14 @@ def collect_moltbook(target_posts: int = None, per_page: int = 50) -> Tuple[dict
         posts = get_moltbook_posts(j)
         if not posts:
             # No more posts at this offset.
+            # When doing deep backfill, we can run past the end and get an empty page.
+            # In that case, reset back to 0 so we keep scanning *new* posts on future runs.
+            if counts["posts_scanned"] == 0 and offset > 0:
+                offset = 0
+                state["moltbook_offset"] = offset
+                state["moltbook_last_run_at"] = utc_now_iso()
+                _save_state(state)
+                continue
             break
 
         pages_ok += 1
