@@ -55,14 +55,14 @@
         "lightning_mentions": 9,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 19,
+        "posts_scanned": 219,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 19
+        "unique_posts": 219
       },
       "mode": "api_multi_endpoints",
       "rails": {
@@ -70,5 +70,5 @@
       }
     }
   },
-  "updated_at": "2026-02-14T05:02:04.852712Z"
+  "updated_at": "2026-02-14T07:24:12.773250Z"
 }
