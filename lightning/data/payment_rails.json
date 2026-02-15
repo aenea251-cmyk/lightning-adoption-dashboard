@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-02-09T08:55:30Z",
+  "updated_at": "2026-02-15T11:27:18Z",
   "rails": [
     {
       "id": "btc-lightning",
@@ -25,6 +25,14 @@
       "standards": ["ERC20"],
       "status": "tracked",
       "why": "High-signal, widely-used stablecoin rail (esp. for professional/agent payments); interoperable across major exchanges/wallets."
+    },
+    {
+      "id": "usdc-base-erc20",
+      "currency": "USDC",
+      "technology": "Base (L2 on Ethereum)",
+      "standards": ["ERC20"],
+      "status": "tracked",
+      "why": "High-signal agent-economy rail: USDC with low fees and strong developer adoption; common for onchain payouts/credits."
     },
     {
       "id": "usdc-solana-spl",

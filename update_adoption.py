@@ -89,6 +89,7 @@ KW_TIPJAR = re.compile(r"/\.well-known/lightning\.json", re.IGNORECASE)
 RAIL_RULES = [
     ("btc-lightning", "BTC on Lightning", re.compile(r"\b(lightning|bolt11|lnurl|lnbc|lntb|lnbcrt)\b", re.IGNORECASE)),
     ("usdc-ethereum-erc20", "USDC on Ethereum (ERC20)", re.compile(r"\busdc\b.*\b(ethereum|erc20)\b|\b(ethereum|erc20)\b.*\busdc\b", re.IGNORECASE | re.DOTALL)),
+    ("usdc-base-erc20", "USDC on Base (ERC20)", re.compile(r"\busdc\b.*\b(base|l2)\b|\bbase\b.*\busdc\b", re.IGNORECASE | re.DOTALL)),
     ("usdt-tron-trc20", "USDT on Tron (TRC20)", re.compile(r"\busdt\b.*\b(tron|trc20)\b|\b(tron|trc20)\b.*\busdt\b", re.IGNORECASE | re.DOTALL)),
     ("usdc-solana-spl", "USDC on Solana (SPL)", re.compile(r"\busdc\b.*\b(solana|spl)\b|\b(solana|spl)\b.*\busdc\b", re.IGNORECASE | re.DOTALL)),
 ]
