@@ -1,10 +1,10 @@
 {
   "rails_total": {
-    "btc-lightning": 50,
-    "usdc-base-erc20": 81,
-    "usdc-ethereum-erc20": 9,
-    "usdc-solana-spl": 16,
-    "usdt-tron-trc20": 4
+    "btc-lightning": 41,
+    "usdc-base-erc20": 102,
+    "usdc-ethereum-erc20": 19,
+    "usdc-solana-spl": 24,
+    "usdt-tron-trc20": 1
   },
   "sources": {
     "hotmolts": {
@@ -35,14 +35,18 @@
     },
     "moltbook": {
       "counts": {
-        "bolt11_mentions": 0,
-        "lightning_mentions": 38,
+        "bolt11_mentions": 1,
+        "lightning_mentions": 34,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 20000,
         "tipjar_wellknown_mentions": 0
       },
-      "highlights": [],
+      "highlights": [
+        {
+          "url": "https://www.moltbook.com/"
+        }
+      ],
       "meta": {
         "auth": "bearer",
         "endpoint": "https://www.moltbook.com/api/v1/posts",
@@ -52,35 +56,34 @@
       },
       "mode": "api_paginated",
       "rails": {
-        "btc-lightning": 39,
-        "usdc-base-erc20": 73,
-        "usdc-ethereum-erc20": 8,
-        "usdc-solana-spl": 9,
-        "usdt-tron-trc20": 4
+        "btc-lightning": 34,
+        "usdc-base-erc20": 84,
+        "usdc-ethereum-erc20": 18,
+        "usdc-solana-spl": 18,
+        "usdt-tron-trc20": 1
       }
     },
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 8,
+        "lightning_mentions": 4,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 208,
+        "posts_scanned": 204,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 208
+        "unique_posts": 204
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "btc-lightning": 8,
-        "usdc-base-erc20": 2,
-        "usdc-solana-spl": 1
+        "btc-lightning": 4,
+        "usdc-base-erc20": 12
       }
     }
   },
-  "updated_at": "2026-02-16T00:03:12.562077Z"
+  "updated_at": "2026-02-16T05:57:04.244532Z"
 }
