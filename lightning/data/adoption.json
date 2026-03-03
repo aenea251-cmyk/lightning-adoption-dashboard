@@ -1,7 +1,7 @@
 {
   "rails_total": {
     "btc-lightning": 1,
-    "usdc-base-erc20": 3
+    "usdc-base-erc20": 2
   },
   "sources": {
     "hotmolts": {
@@ -45,9 +45,7 @@
         "unique_posts": 100
       },
       "mode": "api_paginated",
-      "rails": {
-        "usdc-base-erc20": 1
-      }
+      "rails": {}
     },
     "moltx": {
       "counts": {
@@ -60,8 +58,8 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 4,
-        "errors": 2,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 201
       },
       "mode": "api_multi_endpoints",
@@ -71,5 +69,5 @@
       }
     }
   },
-  "updated_at": "2026-03-03T09:47:38.966315Z"
+  "updated_at": "2026-03-03T10:03:15.552653Z"
 }
