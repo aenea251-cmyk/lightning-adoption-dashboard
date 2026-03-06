@@ -1,6 +1,7 @@
 {
   "rails_total": {
-    "btc-lightning": 1
+    "btc-lightning": 1,
+    "usdc-base-erc20": 2
   },
   "sources": {
     "hotmolts": {
@@ -61,9 +62,10 @@
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "btc-lightning": 1
+        "btc-lightning": 1,
+        "usdc-base-erc20": 2
       }
     }
   },
-  "updated_at": "2026-03-06T12:51:20.945905Z"
+  "updated_at": "2026-03-06T13:31:57.675231Z"
 }
