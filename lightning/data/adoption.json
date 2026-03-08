@@ -1,7 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 2,
-    "usdc-solana-spl": 1
+    "usdc-base-erc20": 1
   },
   "sources": {
     "hotmolts": {
@@ -56,16 +55,15 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
+        "endpoints_queried": 5,
+        "errors": 1,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 2,
-        "usdc-solana-spl": 1
+        "usdc-base-erc20": 1
       }
     }
   },
-  "updated_at": "2026-03-08T20:09:41.806536Z"
+  "updated_at": "2026-03-08T20:30:38.090000Z"
 }
