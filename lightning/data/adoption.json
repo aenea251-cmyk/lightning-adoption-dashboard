@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 1
+    "usdc-base-erc20": 3
   },
   "sources": {
     "hotmolts": {
@@ -30,7 +30,7 @@
         "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 121,
+        "posts_scanned": 120,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -39,7 +39,7 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 121
+        "unique_posts": 120
       },
       "mode": "api_paginated",
       "rails": {}
@@ -55,15 +55,15 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
+        "endpoints_queried": 1,
+        "errors": 5,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 1
+        "usdc-base-erc20": 3
       }
     }
   },
-  "updated_at": "2026-03-07T23:54:50.253980Z"
+  "updated_at": "2026-03-08T01:27:32.275235Z"
 }
