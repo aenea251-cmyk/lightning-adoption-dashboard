@@ -30,7 +30,7 @@
         "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 550,
+        "posts_scanned": 465,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -39,7 +39,7 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 550
+        "unique_posts": 465
       },
       "mode": "api_paginated",
       "rails": {
@@ -65,5 +65,5 @@
       "rails": {}
     }
   },
-  "updated_at": "2026-03-09T21:06:56.171569Z"
+  "updated_at": "2026-03-09T21:42:57.770169Z"
 }
