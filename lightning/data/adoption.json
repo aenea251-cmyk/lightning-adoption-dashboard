@@ -1,15 +1,15 @@
 {
   "rails_total": {
-    "btc-lightning": 10,
+    "btc-lightning": 6,
     "usdc-base-erc20": 15,
-    "usdc-ethereum-erc20": 1,
-    "usdc-solana-spl": 13
+    "usdc-ethereum-erc20": 2,
+    "usdc-solana-spl": 15
   },
   "sources": {
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 4,
+        "lightning_mentions": 6,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
@@ -26,8 +26,8 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "btc-lightning": 4,
-        "usdc-base-erc20": 13,
+        "btc-lightning": 6,
+        "usdc-base-erc20": 14,
         "usdc-ethereum-erc20": 1,
         "usdc-solana-spl": 13
       }
@@ -35,10 +35,10 @@
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 3,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 410,
+        "posts_scanned": 340,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -47,34 +47,33 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 410
+        "unique_posts": 340
       },
       "mode": "api_paginated",
       "rails": {
-        "btc-lightning": 3,
-        "usdc-base-erc20": 2
+        "usdc-base-erc20": 1,
+        "usdc-ethereum-erc20": 1,
+        "usdc-solana-spl": 2
       }
     },
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 3,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 203,
+        "posts_scanned": 200,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
-        "unique_posts": 203
+        "endpoints_queried": 1,
+        "errors": 5,
+        "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
-      "rails": {
-        "btc-lightning": 3
-      }
+      "rails": {}
     }
   },
-  "updated_at": "2026-03-18T14:16:32.830265Z"
+  "updated_at": "2026-03-18T14:43:30.810852Z"
 }
