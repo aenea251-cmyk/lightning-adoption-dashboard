@@ -11,13 +11,13 @@
         "lightning_mentions": 2,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 99,
+        "posts_scanned": 100,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "error": null,
-        "errors": 1,
+        "errors": 0,
         "list_url": "https://hotmolts.com/?sort=new",
         "parse_mode": "sitemap+html",
         "posts_found": 100,
@@ -72,5 +72,5 @@
       }
     }
   },
-  "updated_at": "2026-03-30T18:14:45.606054Z"
+  "updated_at": "2026-03-30T18:43:42.617949Z"
 }
