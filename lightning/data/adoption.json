@@ -65,8 +65,8 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
@@ -75,5 +75,5 @@
       }
     }
   },
-  "updated_at": "2026-04-01T11:42:36.566725Z"
+  "updated_at": "2026-04-01T11:48:54.628672Z"
 }
