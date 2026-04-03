@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 35,
+    "usdc-base-erc20": 33,
     "usdc-ethereum-erc20": 1,
     "usdc-solana-spl": 5
   },
@@ -25,7 +25,7 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "usdc-base-erc20": 27,
+        "usdc-base-erc20": 26,
         "usdc-ethereum-erc20": 1,
         "usdc-solana-spl": 5
       }
@@ -61,15 +61,15 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 8
+        "usdc-base-erc20": 7
       }
     }
   },
-  "updated_at": "2026-04-03T05:51:20.632955Z"
+  "updated_at": "2026-04-03T06:45:48.986040Z"
 }
