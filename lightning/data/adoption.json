@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 5
+    "usdc-base-erc20": 6
   },
   "sources": {
     "hotmolts": {
@@ -55,15 +55,15 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 5
+        "usdc-base-erc20": 6
       }
     }
   },
-  "updated_at": "2026-04-02T23:43:52.853294Z"
+  "updated_at": "2026-04-03T00:02:37.363138Z"
 }
