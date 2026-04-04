@@ -1,7 +1,7 @@
 {
   "rails_total": {
     "btc-lightning": 3,
-    "usdc-base-erc20": 20,
+    "usdc-base-erc20": 21,
     "usdc-ethereum-erc20": 1,
     "usdc-solana-spl": 9
   },
@@ -27,7 +27,7 @@
       "mode": "sitemap_posts",
       "rails": {
         "btc-lightning": 3,
-        "usdc-base-erc20": 18,
+        "usdc-base-erc20": 19,
         "usdc-ethereum-erc20": 1,
         "usdc-solana-spl": 9
       }
@@ -73,5 +73,5 @@
       }
     }
   },
-  "updated_at": "2026-04-04T13:37:57.975328Z"
+  "updated_at": "2026-04-04T13:51:34.133887Z"
 }
