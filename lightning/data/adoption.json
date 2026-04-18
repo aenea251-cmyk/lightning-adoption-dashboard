@@ -1,7 +1,7 @@
 {
   "rails_total": {
     "btc-lightning": 3,
-    "usdc-base-erc20": 22,
+    "usdc-base-erc20": 23,
     "usdc-solana-spl": 4
   },
   "sources": {
@@ -68,9 +68,9 @@
       "mode": "api_multi_endpoints",
       "rails": {
         "btc-lightning": 2,
-        "usdc-base-erc20": 7
+        "usdc-base-erc20": 8
       }
     }
   },
-  "updated_at": "2026-04-18T11:11:36.104479Z"
+  "updated_at": "2026-04-18T11:52:28.299405Z"
 }
