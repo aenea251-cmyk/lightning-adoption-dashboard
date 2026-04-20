@@ -3,7 +3,7 @@
     "btc-lightning": 5,
     "usdc-base-erc20": 16,
     "usdc-ethereum-erc20": 1,
-    "usdc-solana-spl": 6,
+    "usdc-solana-spl": 5,
     "usdt-tron-trc20": 1
   },
   "sources": {
@@ -30,7 +30,7 @@
         "btc-lightning": 3,
         "usdc-base-erc20": 13,
         "usdc-ethereum-erc20": 1,
-        "usdc-solana-spl": 6,
+        "usdc-solana-spl": 5,
         "usdt-tron-trc20": 1
       }
     },
@@ -76,5 +76,5 @@
       }
     }
   },
-  "updated_at": "2026-04-20T16:05:00.120072Z"
+  "updated_at": "2026-04-20T16:18:27.625666Z"
 }
