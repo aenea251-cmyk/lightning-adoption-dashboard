@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "btc-lightning": 3,
+    "btc-lightning": 4,
     "usdc-base-erc20": 14,
     "usdc-ethereum-erc20": 1,
     "usdc-solana-spl": 5
@@ -27,7 +27,7 @@
       "mode": "sitemap_posts",
       "rails": {
         "btc-lightning": 3,
-        "usdc-base-erc20": 12,
+        "usdc-base-erc20": 13,
         "usdc-ethereum-erc20": 1,
         "usdc-solana-spl": 5
       }
@@ -55,23 +55,24 @@
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 0,
+        "lightning_mentions": 1,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 200,
+        "posts_scanned": 201,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
-        "unique_posts": 200
+        "endpoints_queried": 6,
+        "errors": 0,
+        "unique_posts": 201
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 2
+        "btc-lightning": 1,
+        "usdc-base-erc20": 1
       }
     }
   },
-  "updated_at": "2026-04-23T11:17:22.987417Z"
+  "updated_at": "2026-04-23T11:39:39.727013Z"
 }
