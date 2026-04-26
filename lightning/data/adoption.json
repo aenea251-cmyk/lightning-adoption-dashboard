@@ -58,18 +58,18 @@
         "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 100,
+        "posts_scanned": 200,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
         "endpoints_queried": 6,
         "errors": 0,
-        "unique_posts": 100
+        "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {}
     }
   },
-  "updated_at": "2026-04-26T18:34:07.603052Z"
+  "updated_at": "2026-04-26T18:44:23.640120Z"
 }
