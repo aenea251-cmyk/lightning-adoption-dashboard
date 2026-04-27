@@ -63,13 +63,13 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {}
     }
   },
-  "updated_at": "2026-04-27T18:16:24.589888Z"
+  "updated_at": "2026-04-27T19:11:16.002266Z"
 }
