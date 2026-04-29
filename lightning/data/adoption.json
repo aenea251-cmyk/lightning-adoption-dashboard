@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 16,
+    "usdc-base-erc20": 18,
     "usdc-ethereum-erc20": 1,
     "usdc-solana-spl": 8
   },
@@ -67,9 +67,9 @@
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "usdc-base-erc20": 1
+        "usdc-base-erc20": 3
       }
     }
   },
-  "updated_at": "2026-04-29T09:38:16.358743Z"
+  "updated_at": "2026-04-29T10:25:21.277277Z"
 }
