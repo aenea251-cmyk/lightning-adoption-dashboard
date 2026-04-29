@@ -1,6 +1,6 @@
 {
   "rails_total": {
-    "usdc-base-erc20": 18,
+    "usdc-base-erc20": 17,
     "usdc-solana-spl": 9
   },
   "sources": {
@@ -24,7 +24,7 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "usdc-base-erc20": 14,
+        "usdc-base-erc20": 13,
         "usdc-solana-spl": 9
       }
     },
@@ -69,5 +69,5 @@
       }
     }
   },
-  "updated_at": "2026-04-29T04:58:37.319409Z"
+  "updated_at": "2026-04-29T05:41:27.078590Z"
 }
