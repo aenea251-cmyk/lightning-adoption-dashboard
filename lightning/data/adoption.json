@@ -1,9 +1,9 @@
 {
   "rails_total": {
     "btc-lightning": 2,
-    "usdc-base-erc20": 22,
+    "usdc-base-erc20": 24,
     "usdc-ethereum-erc20": 1,
-    "usdc-solana-spl": 6
+    "usdc-solana-spl": 7
   },
   "sources": {
     "hotmolts": {
@@ -26,9 +26,9 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "usdc-base-erc20": 21,
+        "usdc-base-erc20": 23,
         "usdc-ethereum-erc20": 1,
-        "usdc-solana-spl": 6
+        "usdc-solana-spl": 7
       }
     },
     "moltbook": {
@@ -73,5 +73,5 @@
       }
     }
   },
-  "updated_at": "2026-05-01T19:58:04.305591Z"
+  "updated_at": "2026-05-01T20:16:05.549751Z"
 }
