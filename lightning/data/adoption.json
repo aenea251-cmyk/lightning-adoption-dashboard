@@ -3,7 +3,7 @@
     "btc-lightning": 3,
     "usdc-base-erc20": 27,
     "usdc-ethereum-erc20": 2,
-    "usdc-solana-spl": 7
+    "usdc-solana-spl": 9
   },
   "sources": {
     "hotmolts": {
@@ -29,7 +29,7 @@
         "btc-lightning": 1,
         "usdc-base-erc20": 25,
         "usdc-ethereum-erc20": 2,
-        "usdc-solana-spl": 7
+        "usdc-solana-spl": 9
       }
     },
     "moltbook": {
@@ -74,5 +74,5 @@
       }
     }
   },
-  "updated_at": "2026-05-02T11:42:04.396775Z"
+  "updated_at": "2026-05-02T12:05:05.792476Z"
 }
