@@ -1,8 +1,8 @@
 {
   "rails_total": {
     "btc-lightning": 5,
-    "usdc-base-erc20": 24,
-    "usdc-solana-spl": 12
+    "usdc-base-erc20": 18,
+    "usdc-solana-spl": 11
   },
   "sources": {
     "hotmolts": {
@@ -26,8 +26,8 @@
       "mode": "sitemap_posts",
       "rails": {
         "btc-lightning": 2,
-        "usdc-base-erc20": 20,
-        "usdc-solana-spl": 12
+        "usdc-base-erc20": 18,
+        "usdc-solana-spl": 11
       }
     },
     "moltbook": {
@@ -67,10 +67,9 @@
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "btc-lightning": 3,
-        "usdc-base-erc20": 4
+        "btc-lightning": 3
       }
     }
   },
-  "updated_at": "2026-05-05T17:58:09.615897Z"
+  "updated_at": "2026-05-05T18:53:57.623180Z"
 }
