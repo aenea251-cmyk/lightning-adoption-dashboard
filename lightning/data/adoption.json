@@ -2,7 +2,7 @@
   "rails_total": {
     "btc-lightning": 4,
     "usdc-base-erc20": 24,
-    "usdc-solana-spl": 15,
+    "usdc-solana-spl": 16,
     "usdt-tron-trc20": 1
   },
   "sources": {
@@ -28,7 +28,7 @@
       "rails": {
         "btc-lightning": 2,
         "usdc-base-erc20": 22,
-        "usdc-solana-spl": 15,
+        "usdc-solana-spl": 16,
         "usdt-tron-trc20": 1
       }
     },
@@ -74,5 +74,5 @@
       }
     }
   },
-  "updated_at": "2026-05-11T20:59:36.999854Z"
+  "updated_at": "2026-05-11T21:50:40.138117Z"
 }
