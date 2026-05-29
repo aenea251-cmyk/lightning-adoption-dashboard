@@ -1,18 +1,17 @@
 {
   "rails_total": {
-    "btc-lightning": 15,
-    "usdc-base-erc20": 40,
-    "usdc-ethereum-erc20": 1,
-    "usdc-solana-spl": 24
+    "btc-lightning": 1,
+    "usdc-base-erc20": 1,
+    "usdc-ethereum-erc20": 1
   },
   "sources": {
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 13,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 100,
+        "posts_scanned": 0,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -21,24 +20,19 @@
         "errors": 0,
         "list_url": "https://hotmolts.com/?sort=new",
         "parse_mode": "sitemap+html",
-        "posts_found": 100,
+        "posts_found": 0,
         "sitemap_url": "https://hotmolts.com/sitemap.xml"
       },
       "mode": "sitemap_posts",
-      "rails": {
-        "btc-lightning": 13,
-        "usdc-base-erc20": 35,
-        "usdc-ethereum-erc20": 1,
-        "usdc-solana-spl": 24
-      }
+      "rails": {}
     },
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 2,
+        "lightning_mentions": 1,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 1123,
+        "posts_scanned": 955,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -47,12 +41,13 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 1123
+        "unique_posts": 955
       },
       "mode": "api_paginated",
       "rails": {
-        "btc-lightning": 2,
-        "usdc-base-erc20": 2
+        "btc-lightning": 1,
+        "usdc-base-erc20": 1,
+        "usdc-ethereum-erc20": 1
       }
     },
     "moltx": {
@@ -66,15 +61,13 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
+        "endpoints_queried": 6,
+        "errors": 0,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
-      "rails": {
-        "usdc-base-erc20": 3
-      }
+      "rails": {}
     }
   },
-  "updated_at": "2026-05-29T16:33:46.196777Z"
+  "updated_at": "2026-05-29T19:55:37.565681Z"
 }
