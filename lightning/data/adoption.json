@@ -1,14 +1,14 @@
 {
   "rails_total": {
-    "btc-lightning": 8,
+    "btc-lightning": 2,
     "usdc-base-erc20": 30,
-    "usdc-solana-spl": 6
+    "usdc-solana-spl": 3
   },
   "sources": {
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 4,
+        "lightning_mentions": 2,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
@@ -25,18 +25,18 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "btc-lightning": 4,
-        "usdc-base-erc20": 28,
-        "usdc-solana-spl": 6
+        "btc-lightning": 2,
+        "usdc-base-erc20": 29,
+        "usdc-solana-spl": 3
       }
     },
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 4,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 758,
+        "posts_scanned": 0,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -45,13 +45,10 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 758
+        "unique_posts": 0
       },
       "mode": "api_paginated",
-      "rails": {
-        "btc-lightning": 4,
-        "usdc-base-erc20": 2
-      }
+      "rails": {}
     },
     "moltx": {
       "counts": {
@@ -64,13 +61,15 @@
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
+        "endpoints_queried": 3,
+        "errors": 3,
         "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
-      "rails": {}
+      "rails": {
+        "usdc-base-erc20": 1
+      }
     }
   },
-  "updated_at": "2026-06-04T18:53:43.234049Z"
+  "updated_at": "2026-06-04T22:52:15.931968Z"
 }
