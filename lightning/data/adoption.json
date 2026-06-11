@@ -1,15 +1,15 @@
 {
   "rails_total": {
-    "btc-lightning": 4,
-    "usdc-base-erc20": 45,
+    "btc-lightning": 2,
+    "usdc-base-erc20": 51,
     "usdc-ethereum-erc20": 1,
-    "usdc-solana-spl": 3
+    "usdc-solana-spl": 4
   },
   "sources": {
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 2,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
@@ -26,19 +26,18 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "btc-lightning": 2,
-        "usdc-base-erc20": 43,
+        "usdc-base-erc20": 50,
         "usdc-ethereum-erc20": 1,
-        "usdc-solana-spl": 3
+        "usdc-solana-spl": 4
       }
     },
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 1,
+        "lightning_mentions": 2,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 557,
+        "posts_scanned": 750,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -47,34 +46,33 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 557
+        "unique_posts": 750
       },
       "mode": "api_paginated",
       "rails": {
-        "btc-lightning": 1
+        "btc-lightning": 2
       }
     },
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 1,
+        "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 201,
+        "posts_scanned": 200,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 6,
-        "errors": 0,
-        "unique_posts": 201
+        "endpoints_queried": 1,
+        "errors": 5,
+        "unique_posts": 200
       },
       "mode": "api_multi_endpoints",
       "rails": {
-        "btc-lightning": 1,
-        "usdc-base-erc20": 2
+        "usdc-base-erc20": 1
       }
     }
   },
-  "updated_at": "2026-06-11T07:57:44.067472Z"
+  "updated_at": "2026-06-11T13:18:58.359223Z"
 }
