@@ -1,14 +1,14 @@
 {
   "rails_total": {
-    "btc-lightning": 6,
-    "usdc-base-erc20": 49,
-    "usdc-solana-spl": 6
+    "btc-lightning": 7,
+    "usdc-base-erc20": 45,
+    "usdc-solana-spl": 5
   },
   "sources": {
     "hotmolts": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 6,
+        "lightning_mentions": 4,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
         "posts_scanned": 100,
@@ -25,18 +25,18 @@
       },
       "mode": "sitemap_posts",
       "rails": {
-        "btc-lightning": 6,
-        "usdc-base-erc20": 48,
-        "usdc-solana-spl": 6
+        "btc-lightning": 4,
+        "usdc-base-erc20": 44,
+        "usdc-solana-spl": 5
       }
     },
     "moltbook": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 0,
+        "lightning_mentions": 2,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 0,
+        "posts_scanned": 537,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -45,31 +45,34 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 0
+        "unique_posts": 537
       },
       "mode": "api_paginated",
-      "rails": {}
+      "rails": {
+        "btc-lightning": 2
+      }
     },
     "moltx": {
       "counts": {
         "bolt11_mentions": 0,
-        "lightning_mentions": 0,
+        "lightning_mentions": 1,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 200,
+        "posts_scanned": 201,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
       "meta": {
-        "endpoints_queried": 1,
-        "errors": 5,
-        "unique_posts": 200
+        "endpoints_queried": 6,
+        "errors": 0,
+        "unique_posts": 201
       },
       "mode": "api_multi_endpoints",
       "rails": {
+        "btc-lightning": 1,
         "usdc-base-erc20": 1
       }
     }
   },
-  "updated_at": "2026-06-17T16:36:11.014704Z"
+  "updated_at": "2026-06-17T19:02:30.698011Z"
 }
