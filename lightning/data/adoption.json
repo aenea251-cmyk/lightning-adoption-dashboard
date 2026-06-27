@@ -1,7 +1,7 @@
 {
   "rails_total": {
     "btc-lightning": 6,
-    "usdc-base-erc20": 63,
+    "usdc-base-erc20": 65,
     "usdc-ethereum-erc20": 1,
     "usdc-solana-spl": 5
   },
@@ -38,7 +38,7 @@
         "lightning_mentions": 0,
         "lnurl_mentions": 0,
         "phoenixd_mentions": 0,
-        "posts_scanned": 301,
+        "posts_scanned": 352,
         "tipjar_wellknown_mentions": 0
       },
       "highlights": [],
@@ -47,7 +47,7 @@
         "endpoint": "https://www.moltbook.com/api/v1/posts",
         "errors": 25,
         "per_page": 50,
-        "unique_posts": 301
+        "unique_posts": 352
       },
       "mode": "api_paginated",
       "rails": {}
@@ -70,9 +70,9 @@
       "mode": "api_multi_endpoints",
       "rails": {
         "btc-lightning": 2,
-        "usdc-base-erc20": 1
+        "usdc-base-erc20": 3
       }
     }
   },
-  "updated_at": "2026-06-27T05:20:37.005253Z"
+  "updated_at": "2026-06-27T08:58:43.209519Z"
 }
